@@ -1,0 +1,23 @@
+# Default training configuration
+model_id: meta-llama/Llama-2-7b-hf
+dataset: tatsu-lab/alpaca
+output_dir: ./output/training
+
+epochs: 3
+batch_size: 4
+learning_rate: 2e-4
+lora_rank: 64
+lora_alpha: 128
+
+use_qlora: true
+use_dora: false
+
+max_seq_length: 2048
+gradient_accumulation_steps: 4
+warmup_ratio: 0.03
+weight_decay: 0.001
+
+# Logging
+logging_steps: 10
+save_steps: 100
+eval_steps: 100

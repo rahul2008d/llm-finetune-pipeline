@@ -1,0 +1,4 @@
+# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/monitoring/drift.py
+# hypothesis_version: 6.151.9
+
+[0.05, 0.1, 1.0, 'DriftDetector', 'baseline', 'current', 'degraded', 'drift_detected', 'p_value', 'relative_change', 'statistic', 'threshold']

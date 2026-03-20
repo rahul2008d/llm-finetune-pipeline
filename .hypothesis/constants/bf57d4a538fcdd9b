@@ -1,0 +1,4 @@
+# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/config/settings.py
+# hypothesis_version: 6.141.1
+
+[0.0002, 0.001, 0.03, 128, 2048, 'AWS region', 'AppSettings', 'INFO', 'Learning rate', 'LoRA alpha', 'LoRA rank', 'Log output format', 'Logging level', 'Runtime environment', 'TRAIN_', 'TrainingSettings', 'Warmup ratio', 'Weight decay', 'case_sensitive', 'development', 'env_prefix', 'json', 'us-east-1']

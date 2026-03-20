@@ -1,0 +1,28 @@
+# syntax=docker/dockerfile:1
+ARG AWS_REGION=us-east-1
+FROM 763104351884.dkr.ecr.${AWS_REGION}.amazonaws.com/huggingface-pytorch-training:2.2.0-transformers4.44.0-gpu-py310-cu121-ubuntu22.04
+
+# ── Environment ──────────────────────────────────────────────────────────────
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    HF_HOME=/tmp/hf_cache \
+    TRANSFORMERS_CACHE=/tmp/hf_cache \
+    SAGEMAKER_PROGRAM=train.py
+
+# ── Dependencies ─────────────────────────────────────────────────────────────
+COPY requirements-sagemaker.txt /tmp/requirements-sagemaker.txt
+RUN pip install --no-cache-dir -r /tmp/requirements-sagemaker.txt \
+    && rm /tmp/requirements-sagemaker.txt
+
+# ── Application code ─────────────────────────────────────────────────────────
+COPY src/ /opt/ml/code/src/
+COPY configs/ /opt/ml/code/configs/
+
+WORKDIR /opt/ml/code
+
+# ── Health check ─────────────────────────────────────────────────────────────
+HEALTHCHECK --interval=60s --timeout=10s --retries=3 \
+    CMD python -c 'import torch; assert torch.cuda.is_available()'
+
+# ── Non-root user ────────────────────────────────────────────────────────────
+USER 1000

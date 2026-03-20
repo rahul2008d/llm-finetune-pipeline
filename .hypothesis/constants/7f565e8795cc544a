@@ -1,0 +1,4 @@
+# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/data/templates.py
+# hypothesis_version: 6.141.1
+
+['### Response:\n', '[/INST] ', 'alpaca', 'chatml', 'configs', 'llama3', 'mistral', 'system', 'templates', 'utf-8']

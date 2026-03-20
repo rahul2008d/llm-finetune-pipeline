@@ -1,0 +1,4 @@
+# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/data/tokenizer.py
+# hypothesis_version: 6.141.1
+
+[0.02, 0.08, 0.9, -100, '*.jsonl', '1.0.0', 'attention_mask', 'input_ids', 'instruction', 'labels', 'manifest.json', 'p50', 'p90', 'p95', 'p99', 'right', 'test', 'train', 'utf-8', 'val', 'w']

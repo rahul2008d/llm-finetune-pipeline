@@ -1,0 +1,4 @@
+# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/evaluation/metrics.py
+# hypothesis_version: 6.151.9
+
+[0.0, 'Accuracy computed', 'BLEU score computed', 'MetricsComputer', 'Perplexity computed', 'bleu', 'rouge']

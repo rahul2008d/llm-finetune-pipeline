@@ -1,0 +1,67 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Accelerate config: DeepSpeed ZeRO Stage 3
+# ──────────────────────────────────────────────────────────────────────────────
+# USE WHEN:
+#   - Fine-tuning 70B+ models across MULTIPLE NODES
+#   - ZeRO-3 partitions parameters, gradients, and optimizer states across all
+#     GPUs on all nodes — supports the largest models
+#   - Instance types: ml.p4d.24xlarge × 2+ nodes (8× A100 per node)
+#
+# NOT SUITABLE FOR:
+#   - Single-GPU training (massive overhead for no benefit)
+#   - Single-node multi-GPU (FSDP is simpler and equally fast)
+#   - QLoRA (DeepSpeed ZeRO-3 + 4-bit quantization has limited support;
+#     use FSDP for QLoRA multi-GPU — see fsdp_qlora.yaml)
+#
+# Pair with: configs/training/qlora_llama3_70b.yaml (after switching to
+#            full-precision or 8-bit, since ZeRO-3 + 4-bit is experimental)
+#
+# NOTES:
+#   - offload_optimizer_device: cpu — pages optimizer states to host RAM to
+#     fit 70B optimizer in memory (2× model size for Adam)
+#   - offload_param_device: none — keeps model params on GPU for speed.
+#     Set to 'cpu' if GPU memory is insufficient (slower but fits larger models)
+#   - zero3_save_16bit_model: true — consolidates and saves a fp16 checkpoint
+#     that can be loaded without DeepSpeed (portable)
+# ──────────────────────────────────────────────────────────────────────────────
+
+compute_environment: LOCAL_MACHINE
+distributed_type: DEEPSPEED
+downcast_bf16: 'no'
+machine_rank: 0
+main_training_function: main
+mixed_precision: bf16
+num_machines: 2
+num_processes: 16  # 8 GPUs × 2 nodes
+
+deepspeed_config:
+  # ZeRO Stage 3: shard parameters + gradients + optimizer states
+  zero_stage: 3
+
+  # Offload Adam optimizer states to CPU — frees ~2× model size of GPU memory
+  offload_optimizer_device: cpu
+  offload_optimizer_pin_memory: true
+
+  # Keep parameters on GPU for compute speed.
+  # Change to 'cpu' for extreme memory pressure (slower training).
+  offload_param_device: none
+
+  # Enable ZeRO-3 parameter partitioning during model init
+  zero3_init_flag: true
+
+  # Save a consolidated fp16 model (loadable without DeepSpeed)
+  zero3_save_16bit_model: true
+
+  # Gradient accumulation handled by TrainingArguments; let DeepSpeed mirror it
+  gradient_accumulation_steps: auto
+  gradient_clipping: auto
+
+  # Communication settings
+  steps_per_print: 50
+
+rdzv_backend: static
+same_network: true
+tpu_env: []
+tpu_use_cluster: false
+tpu_use_sudo: false
+use_cpu: false

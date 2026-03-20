@@ -1,0 +1,13 @@
+# Default deployment configuration
+endpoint_name: llm-finetune-endpoint
+instance_type: ml.g5.2xlarge
+instance_count: 1
+model_data_url: s3://your-models-bucket/latest/model.tar.gz
+
+# Autoscaling
+min_instances: 1
+max_instances: 3
+target_tracking_value: 70.0
+
+# Health check
+health_check_timeout: 120

@@ -1,0 +1,4 @@
+# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/training/model_loader.py
+# hypothesis_version: 6.141.1
+
+[0.0, 100.0, 'Base model loaded', 'Loading base model', 'Loading tokenizer', 'ModelLoader', 'Tokenizer loaded', 'auto', 'bfloat16', 'cpu', 'float16', 'float32', 'right']

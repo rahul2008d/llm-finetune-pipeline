@@ -1,0 +1,4 @@
+# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/data/pipeline.py
+# hypothesis_version: 6.151.9
+
+[0.0, 0.85, 1.0, '*', '/', '/tmp/tokenized', 'auto', 'avg_input_tokens', 'avg_output_tokens', 'clean', 'config', 'conversations', 'destination', 'details', 'dropped_empty', 'dropped_language', 'duration_seconds', 'finished_at', 'format', 'ingest', 'input_count', 'invalid_dropped', 'json', 'manifest', 'mask', 'name', 'output_count', 'pii_by_type', 'pii_scan', 'pipeline_complete', 'remove', 'replace', 'report', 'report.json', 's3', 's3://', 'samples_clean', 'samples_with_pii', 'skipped', 'source', 'started_at', 'step', 'step_end', 'step_start', 'steps', 'template', 'tokenize', 'tokenized', 'upload', 'utf-8', 'validate', 'w']

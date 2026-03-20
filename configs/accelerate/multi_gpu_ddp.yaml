@@ -1,0 +1,38 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Accelerate config: Multi-GPU DDP (Distributed Data Parallel)
+# ──────────────────────────────────────────────────────────────────────────────
+# USE WHEN:
+#   - Fine-tuning 7B / 8B models across multiple GPUs on a single node
+#   - Each GPU holds a full copy of the model; data is sharded across GPUs
+#   - Instance types: ml.g5.12xlarge (4× A10G), ml.g5.48xlarge (8× A10G),
+#                     ml.p4d.24xlarge (8× A100 80 GB)
+#
+# NOT SUITABLE FOR:
+#   - 70B+ models (each GPU needs a full model copy — use FSDP instead)
+#   - Multi-node training (use DeepSpeed ZeRO-3)
+#
+# Pair with: configs/training/qlora_llama3_8b.yaml (adjust batch size up)
+#            configs/training/qlora_mistral_7b.yaml
+#
+# NOTE: num_processes is set to 0 here as a sentinel. At runtime, Accelerate
+#       auto-detects the GPU count from CUDA_VISIBLE_DEVICES when launched via
+#       `accelerate launch`. Override if needed:
+#         accelerate launch --num_processes=4 train.py
+# ──────────────────────────────────────────────────────────────────────────────
+
+compute_environment: LOCAL_MACHINE
+distributed_type: MULTI_GPU
+downcast_bf16: 'no'
+machine_rank: 0
+main_training_function: main
+mixed_precision: bf16
+num_machines: 1
+# Set to the number of GPUs on your instance, or override at launch time.
+# accelerate launch will auto-detect from CUDA_VISIBLE_DEVICES.
+num_processes: 0
+rdzv_backend: static
+same_network: true
+tpu_env: []
+tpu_use_cluster: false
+tpu_use_sudo: false
+use_cpu: false

@@ -1,0 +1,4 @@
+# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/data/ingestion.py
+# hypothesis_version: 6.141.1
+
+['.csv', '.json', '.jsonl', '.parquet', '/', '?', 'auto', 'conversation', 'csv', 'hf', 'ingestion_complete', 'instruction', 'jsonl', 'jsonl_not_dict', 'jsonl_parse_error', 'parquet', 'records', 's3', 's3://', 'train', 'utf-8']

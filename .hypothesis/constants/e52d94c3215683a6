@@ -1,0 +1,4 @@
+# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/data/pii_scanner.py
+# hypothesis_version: 6.141.1
+
+[0.7, '0x', 'CREDIT_CARD', 'CRYPTO', 'EMAIL_ADDRESS', 'IP_ADDRESS', 'MEDICAL_LICENSE', 'PERSON', 'PHONE_NUMBER', 'US_BANK_NUMBER', 'US_SSN', 'en', 'mask', 'remove', 'replace']

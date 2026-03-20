@@ -1,0 +1,4 @@
+# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/config/schema.py
+# hypothesis_version: 6.141.1
+
+[0.0002, 128, 'Dataset name or path', 'DeploymentConfig', 'EvaluationConfig', 'Metrics to compute', 'TrainingConfig', 'YAMLSchemaLoader', 'deployment', 'evaluation', 'ml.g5.2xlarge', 'results/', 'training']

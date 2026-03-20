@@ -1,0 +1,116 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# QLoRA fine-tuning: Meta Llama 3.1 8B on a single ml.g5.2xlarge (1× A10G 24 GB)
+# ──────────────────────────────────────────────────────────────────────────────
+# Usage:
+#   from config.loader import load_training_config
+#   cfg = load_training_config("configs/training/qlora_llama3_8b.yaml")
+
+experiment_name: qlora-llama3-8b
+run_name: null  # auto-generated with timestamp + short UUID
+
+# ── Model ────────────────────────────────────────────────────────────────────
+model:
+  model_name_or_path: meta-llama/Meta-Llama-3.1-8B-Instruct
+  trust_remote_code: false
+  torch_dtype: bfloat16
+  # flash_attention_2 requires Ampere+ GPU (A10G qualifies)
+  attn_implementation: flash_attention_2
+  max_seq_length: 4096
+  # Must be False when gradient_checkpointing is True (saves VRAM, avoids
+  # caching KV states that would be recomputed anyway).
+  use_cache: false
+
+# ── Quantization ─────────────────────────────────────────────────────────────
+quantization:
+  method: qlora
+  load_in_4bit: true
+  # NF4 is information-theoretically optimal for normally-distributed weights
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_compute_dtype: bfloat16
+  # Double quantization: quantizes the quantization constants themselves,
+  # saving ~0.4 bits/param (~340 MB on a 7B model).
+  bnb_4bit_use_double_quant: true
+
+# ── LoRA ─────────────────────────────────────────────────────────────────────
+lora:
+  r: 64
+  # alpha = 2× rank is a common heuristic; keeps the effective learning rate
+  # for LoRA weights close to the base learning_rate.
+  lora_alpha: 128
+  lora_dropout: 0.05
+  # All linear projections in the attention + MLP blocks
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+  bias: none
+  task_type: CAUSAL_LM
+  use_dora: false
+  use_rslora: false
+  modules_to_save: null
+
+# ── Training Hyperparameters ─────────────────────────────────────────────────
+training:
+  num_train_epochs: 3
+  per_device_train_batch_size: 4
+  per_device_eval_batch_size: 8
+  # effective_batch = 4 × 4 = 16
+  gradient_accumulation_steps: 4
+  learning_rate: 2.0e-4
+  weight_decay: 0.01
+  warmup_ratio: 0.03
+  lr_scheduler_type: cosine
+  max_grad_norm: 1.0
+  # paged_adamw_8bit keeps optimizer states in 8-bit and pages them to CPU
+  # when GPU memory is tight — critical for QLoRA on 24 GB cards.
+  optim: paged_adamw_8bit
+  bf16: true
+  fp16: false
+  gradient_checkpointing: true
+  gradient_checkpointing_kwargs:
+    # use_reentrant=False avoids subtle bugs with torch.autograd.checkpoint
+    use_reentrant: false
+  logging_steps: 10
+  eval_strategy: steps
+  eval_steps: 100
+  save_strategy: steps
+  save_steps: 200
+  save_total_limit: 3
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  seed: 42
+  data_seed: 42
+  dataloader_num_workers: 4
+  dataloader_pin_memory: true
+  # Pads shorter sequences together to reduce wasted compute
+  group_by_length: true
+  report_to:
+    - mlflow
+
+# ── SageMaker ────────────────────────────────────────────────────────────────
+sagemaker:
+  instance_type: ml.g5.2xlarge   # 1× A10G 24 GB, 8 vCPU, 32 GB RAM
+  instance_count: 1
+  volume_size_gb: 200            # model weights + dataset + checkpoints
+  max_run_seconds: 86400         # 24-hour safety limit
+  max_wait_seconds: 86400
+  use_spot_instances: false
+  spot_max_wait_ratio: 2.0
+  checkpoint_s3_uri: null
+  role_arn: ${SAGEMAKER_ROLE_ARN}
+  vpc_config: null
+  environment:
+    HF_TOKEN: ${HF_TOKEN:-}
+    WANDB_DISABLED: "true"
+
+# ── Dataset & Output ─────────────────────────────────────────────────────────
+# Uncomment dataset_id and remove dataset_path after running Prompts 17-18
+# dataset_id: ${DATASET_ID:-llama3-8b-instruct-v1}
+dataset_path: ./data/prepared/llama3_8b/
+output_s3_uri: ${OUTPUT_S3_URI:-s3://llm-finetune-artifacts/output/qlora-llama3-8b}
+resume_from_checkpoint: null

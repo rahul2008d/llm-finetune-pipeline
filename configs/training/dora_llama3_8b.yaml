@@ -1,0 +1,113 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# DoRA fine-tuning: Meta Llama 3.1 8B on a single ml.g5.2xlarge (1× A10G 24 GB)
+# ──────────────────────────────────────────────────────────────────────────────
+# DoRA (Weight-Decomposed Low-Rank Adaptation) decomposes weight updates into
+# magnitude and direction components, often yielding better results than
+# standard LoRA at a modest compute overhead (~10-15 %).
+#
+# Key differences from the QLoRA config:
+#   - quantization.method = dora
+#   - lora.use_dora = true
+#   - Higher rank (128) to give the direction component more capacity
+#   - Lower learning rate (1e-4) since DoRA's decomposition is more sensitive
+
+experiment_name: dora-llama3-8b
+run_name: null
+
+# ── Model ────────────────────────────────────────────────────────────────────
+model:
+  model_name_or_path: meta-llama/Meta-Llama-3.1-8B-Instruct
+  trust_remote_code: false
+  torch_dtype: bfloat16
+  attn_implementation: flash_attention_2
+  max_seq_length: 4096
+  use_cache: false
+
+# ── Quantization ─────────────────────────────────────────────────────────────
+quantization:
+  method: dora
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_compute_dtype: bfloat16
+  bnb_4bit_use_double_quant: true
+
+# ── LoRA (DoRA mode) ────────────────────────────────────────────────────────
+lora:
+  # Higher rank gives the direction component more expressiveness
+  r: 128
+  # alpha = 2× rank keeps the effective LR consistent
+  lora_alpha: 256
+  lora_dropout: 0.05
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+  bias: none
+  task_type: CAUSAL_LM
+  # Enables Weight-Decomposed LoRA — must be true when method=dora
+  use_dora: true
+  use_rslora: false
+  modules_to_save: null
+
+# ── Training Hyperparameters ─────────────────────────────────────────────────
+training:
+  num_train_epochs: 3
+  per_device_train_batch_size: 4
+  per_device_eval_batch_size: 8
+  gradient_accumulation_steps: 4
+  # Lower LR than QLoRA — DoRA's magnitude/direction decomposition
+  # amplifies effective updates, so a smaller step is needed.
+  learning_rate: 1.0e-4
+  weight_decay: 0.01
+  warmup_ratio: 0.03
+  lr_scheduler_type: cosine
+  max_grad_norm: 1.0
+  optim: paged_adamw_8bit
+  bf16: true
+  fp16: false
+  gradient_checkpointing: true
+  gradient_checkpointing_kwargs:
+    use_reentrant: false
+  logging_steps: 10
+  eval_strategy: steps
+  eval_steps: 100
+  save_strategy: steps
+  save_steps: 200
+  save_total_limit: 3
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  seed: 42
+  data_seed: 42
+  dataloader_num_workers: 4
+  dataloader_pin_memory: true
+  group_by_length: true
+  report_to:
+    - mlflow
+
+# ── SageMaker ────────────────────────────────────────────────────────────────
+sagemaker:
+  instance_type: ml.g5.2xlarge
+  instance_count: 1
+  volume_size_gb: 200
+  max_run_seconds: 86400
+  max_wait_seconds: 86400
+  use_spot_instances: false
+  spot_max_wait_ratio: 2.0
+  checkpoint_s3_uri: null
+  role_arn: ${SAGEMAKER_ROLE_ARN}
+  vpc_config: null
+  environment:
+    HF_TOKEN: ${HF_TOKEN:-}
+    WANDB_DISABLED: "true"
+
+# ── Dataset & Output ─────────────────────────────────────────────────────────
+# Uncomment dataset_id and remove dataset_path after running Prompts 17-18
+# dataset_id: ${DATASET_ID:-llama3-8b-instruct-v1}
+dataset_path: ./data/prepared/llama3_8b/
+output_s3_uri: ${OUTPUT_S3_URI:-s3://llm-finetune-artifacts/output/dora-llama3-8b}
+resume_from_checkpoint: null

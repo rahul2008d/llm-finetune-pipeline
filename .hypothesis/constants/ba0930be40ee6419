@@ -1,0 +1,4 @@
+# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/serving/endpoint.py
+# hypothesis_version: 6.151.9
+
+['2.1', '4.37', 'Body', 'Deleting endpoint', 'Deployment complete', 'Endpoint deleted', 'application/json', 'ml.g5.2xlarge', 'py310', 'sagemaker', 'sagemaker-runtime']

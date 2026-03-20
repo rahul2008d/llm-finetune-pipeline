@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  train:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.train
+      args:
+        AWS_REGION: ${AWS_REGION:-us-east-1}
+    platform: linux/amd64
+    volumes:
+      - ../data:/opt/ml/input/data
+      - ../src:/opt/ml/code/src
+      - ../configs:/opt/ml/code/configs
+      - model-cache:/tmp/hf_cache
+    env_file:
+      - ../.env
+    environment:
+      - HF_HOME=/tmp/hf_cache
+      - TRANSFORMERS_CACHE=/tmp/hf_cache
+    depends_on:
+      - localstack
+    networks:
+      - pipeline
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,ssm
+      - DEFAULT_REGION=${AWS_REGION:-us-east-1}
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - localstack-data:/var/lib/localstack
+    networks:
+      - pipeline
+
+volumes:
+  model-cache:
+  localstack-data:
+
+networks:
+  pipeline:
+    driver: bridge

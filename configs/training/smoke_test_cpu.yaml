@@ -1,0 +1,11 @@
+# Smoke test — CPU, no quantization, GPT-2
+model_id: "openai-community/gpt2"
+dataset: "./data/prepared/smoke_test/"
+output_dir: "./outputs/smoke_test/"
+epochs: 1
+batch_size: 2
+learning_rate: 0.0002
+lora_rank: 8
+lora_alpha: 16
+use_qlora: false
+use_dora: false

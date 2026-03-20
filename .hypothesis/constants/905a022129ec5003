@@ -1,0 +1,4 @@
+# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/training/runner.py
+# hypothesis_version: 6.141.1
+
+[0.05, 100, './output', 'Merged model saved', 'Model saved', 'Model setup complete', 'Setting up model', 'Starting training', 'Training complete', 'TrainingRunner', 'all-linear', 'auto', 'dataset_text_field', 'formatting_func', 'input_ids', 'nf4', 'no', 'none', 'steps', 'text']

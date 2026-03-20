@@ -1,0 +1,125 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# QLoRA fine-tuning: Meta Llama 3.1 70B on ml.g5.48xlarge (8× A10G, 192 GB)
+# ──────────────────────────────────────────────────────────────────────────────
+# The 70B model in 4-bit NF4 weighs ~35 GB.  With LoRA adapter weights,
+# optimizer states, activations, and gradient checkpoints the total memory
+# footprint fits within the 8× A10G (192 GB aggregate) of a g5.48xlarge.
+#
+# For faster training, consider ml.p4d.24xlarge (8× A100 80 GB) which
+# also supports NVLink interconnect.
+#
+# Key differences from the 8B config:
+#   - Larger instance (g5.48xlarge)
+#   - Reduced per-device batch size (1) to fit 70B activations
+#   - Higher gradient accumulation (16) to maintain effective batch of 16
+#   - Max sequence length kept at 4096 (adjust down if OOM)
+
+experiment_name: qlora-llama3-70b
+run_name: null
+
+# ── Model ────────────────────────────────────────────────────────────────────
+model:
+  model_name_or_path: meta-llama/Meta-Llama-3.1-70B-Instruct
+  trust_remote_code: false
+  torch_dtype: bfloat16
+  attn_implementation: flash_attention_2
+  max_seq_length: 4096
+  use_cache: false
+
+# ── Quantization ─────────────────────────────────────────────────────────────
+quantization:
+  method: qlora
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_compute_dtype: bfloat16
+  bnb_4bit_use_double_quant: true
+
+# ── LoRA ─────────────────────────────────────────────────────────────────────
+lora:
+  r: 64
+  lora_alpha: 128
+  lora_dropout: 0.05
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+  bias: none
+  task_type: CAUSAL_LM
+  use_dora: false
+  use_rslora: false
+  modules_to_save: null
+
+# ── Training Hyperparameters ─────────────────────────────────────────────────
+training:
+  num_train_epochs: 3
+  # Batch size 1 to fit 70B activations per GPU
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 2
+  # Higher accumulation compensates for tiny per-device batch:
+  # effective_batch = 1 × 16 = 16
+  gradient_accumulation_steps: 16
+  learning_rate: 2.0e-4
+  weight_decay: 0.01
+  warmup_ratio: 0.03
+  lr_scheduler_type: cosine
+  max_grad_norm: 1.0
+  optim: paged_adamw_8bit
+  bf16: true
+  fp16: false
+  gradient_checkpointing: true
+  gradient_checkpointing_kwargs:
+    use_reentrant: false
+  logging_steps: 10
+  eval_strategy: steps
+  eval_steps: 50
+  save_strategy: steps
+  save_steps: 100
+  save_total_limit: 3
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  seed: 42
+  data_seed: 42
+  # Fewer workers — the bottleneck is GPU compute, not data loading
+  dataloader_num_workers: 2
+  dataloader_pin_memory: true
+  group_by_length: true
+  report_to:
+    - mlflow
+
+# ── SageMaker ────────────────────────────────────────────────────────────────
+sagemaker:
+  # g5.48xlarge: 8× A10G 24 GB each (192 GB aggregate GPU memory)
+  # Alternative: ml.p4d.24xlarge (8× A100 80 GB) for faster training
+  instance_type: ml.g5.48xlarge
+  instance_count: 1
+  # 500 GB to hold 70B model weights, dataset, and multiple checkpoints
+  volume_size_gb: 500
+  max_run_seconds: 172800         # 48-hour limit for large model training
+  max_wait_seconds: 172800
+  use_spot_instances: false
+  spot_max_wait_ratio: 2.0
+  checkpoint_s3_uri: null
+  role_arn: ${SAGEMAKER_ROLE_ARN}
+  vpc_config: null
+  environment:
+    HF_TOKEN: ${HF_TOKEN:-}
+    WANDB_DISABLED: "true"
+    # FSDP config for multi-GPU sharding via Accelerate
+    ACCELERATE_USE_FSDP: "1"
+    FSDP_SHARDING_STRATEGY: FULL_SHARD
+    FSDP_AUTO_WRAP_POLICY: TRANSFORMER_BASED_WRAP
+    FSDP_BACKWARD_PREFETCH: BACKWARD_PRE
+    FSDP_STATE_DICT_TYPE: SHARDED_STATE_DICT
+    FSDP_OFFLOAD_PARAMS: "false"
+
+# ── Dataset & Output ─────────────────────────────────────────────────────────
+# Uncomment dataset_id and remove dataset_path after running Prompts 17-18
+# dataset_id: ${DATASET_ID:-llama3-70b-instruct-v1}
+dataset_path: ./data/prepared/llama3_70b/
+output_s3_uri: ${OUTPUT_S3_URI:-s3://llm-finetune-artifacts/output/qlora-llama3-70b}
+resume_from_checkpoint: null

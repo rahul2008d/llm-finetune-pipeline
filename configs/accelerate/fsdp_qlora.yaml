@@ -1,0 +1,56 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Accelerate config: FSDP + QLoRA (Fully Sharded Data Parallel)
+# ──────────────────────────────────────────────────────────────────────────────
+# USE WHEN:
+#   - Fine-tuning 70B models with QLoRA across multiple GPUs on a SINGLE node
+#   - Model parameters, gradients, and optimizer states are sharded across GPUs
+#   - Instance types: ml.g5.48xlarge (8× A10G, 192 GB aggregate),
+#                     ml.p4d.24xlarge (8× A100 80 GB, 640 GB aggregate)
+#
+# NOT SUITABLE FOR:
+#   - Single-GPU training (use single_gpu.yaml — FSDP overhead is wasteful)
+#   - Multi-node 70B training (use deepspeed_zero3.yaml for better scaling)
+#   - 7B/8B models unless you need extreme batch sizes (DDP is simpler)
+#
+# Pair with: configs/training/qlora_llama3_70b.yaml
+#
+# KEY REQUIREMENTS:
+#   - fsdp_use_orig_params: true  — REQUIRED for QLoRA + FSDP compatibility.
+#     Without this, FSDP flattens parameters and breaks BitsAndBytes 4-bit
+#     quantization hooks.
+#   - fsdp_cpu_ram_efficient_loading: true  — loads the model on one rank
+#     first, then broadcasts, avoiding 8× CPU memory usage.
+# ──────────────────────────────────────────────────────────────────────────────
+
+compute_environment: LOCAL_MACHINE
+distributed_type: FSDP
+downcast_bf16: 'no'
+machine_rank: 0
+main_training_function: main
+mixed_precision: bf16
+num_machines: 1
+num_processes: 8
+
+fsdp_config:
+  # Wrap at transformer layer boundaries (e.g., LlamaDecoderLayer)
+  fsdp_auto_wrap_policy: TRANSFORMER_BASED_WRAP
+  # Pre-fetch the next set of parameters during backward pass
+  fsdp_backward_prefetch_policy: BACKWARD_PRE
+  # FULL_SHARD: shard params + gradients + optimizer states (ZeRO-3 equivalent)
+  fsdp_sharding_strategy: FULL_SHARD
+  # Save sharded checkpoints — avoids OOM during checkpoint consolidation
+  fsdp_state_dict_type: SHARDED_STATE_DICT
+  # Load model on rank 0 then broadcast — saves CPU memory on multi-GPU nodes
+  fsdp_cpu_ram_efficient_loading: true
+  # REQUIRED for QLoRA: keeps original parameter structure so BitsAndBytes
+  # 4-bit hooks can find and dequantize the right tensors
+  fsdp_use_orig_params: true
+  # Do not offload parameters to CPU — the 4-bit model is small enough
+  fsdp_offload_params: false
+
+rdzv_backend: static
+same_network: true
+tpu_env: []
+tpu_use_cluster: false
+tpu_use_sudo: false
+use_cpu: false

@@ -1,0 +1,63 @@
+# Production-schema smoke test — CPU, no quantization, GPT-2
+experiment_name: "smoke-test"
+
+model:
+  model_name_or_path: "openai-community/gpt2"
+  trust_remote_code: false
+  torch_dtype: "float32"
+  attn_implementation: "eager"
+  max_seq_length: 512
+  use_cache: false
+
+quantization:
+  method: "qlora"
+  load_in_4bit: false  # Disabled for CPU/macOS
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_compute_dtype: "float32"
+  bnb_4bit_use_double_quant: false
+
+lora:
+  r: 8
+  lora_alpha: 16
+  lora_dropout: 0.05
+  target_modules: ["c_attn", "c_proj"]  # GPT-2 specific
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  use_dora: false
+  use_rslora: false
+
+training:
+  num_train_epochs: 1
+  per_device_train_batch_size: 2
+  per_device_eval_batch_size: 2
+  gradient_accumulation_steps: 2
+  learning_rate: 0.0002
+  weight_decay: 0.01
+  warmup_ratio: 0.03
+  lr_scheduler_type: "cosine"
+  max_grad_norm: 1.0
+  optim: "adamw_torch"  # Not paged_adamw_8bit (needs bitsandbytes)
+  bf16: false
+  fp16: false
+  gradient_checkpointing: false
+  logging_steps: 5
+  eval_strategy: "no"
+  eval_steps: 100
+  save_strategy: "no"
+  save_steps: 200
+  save_total_limit: 0
+  load_best_model_at_end: false
+  seed: 42
+  data_seed: 42
+  dataloader_num_workers: 0  # 0 for macOS
+  dataloader_pin_memory: false
+  group_by_length: false
+  report_to: []  # No MLflow for smoke test
+  no_cuda: true  # Force CPU
+
+# No SageMaker config (local training)
+# sagemaker: null
+
+dataset_path: "./data/prepared/smoke_test/"
+output_local_path: "./outputs/smoke_test_production/"
+output_s3_uri: ""

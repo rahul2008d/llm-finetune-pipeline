@@ -1,0 +1,109 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# QLoRA fine-tuning: Mistral 7B v0.3 on a single ml.g5.2xlarge (1× A10G 24 GB)
+# ──────────────────────────────────────────────────────────────────────────────
+# Key differences from the Llama 3 config:
+#   - model_name_or_path points to Mistral
+#   - Mistral uses Grouped-Query Attention (GQA) with fewer KV heads, so
+#     target_modules omits o_proj (output projection is smaller) — kept here
+#     for completeness but can be dropped to save parameters.
+#   - Mistral supports sliding-window attention; max_seq_length = 4096 fits
+#     within the native 32 K window.
+#   - Template must be "mistral" for correct [INST] / [/INST] formatting.
+
+experiment_name: qlora-mistral-7b
+run_name: null
+
+# ── Model ────────────────────────────────────────────────────────────────────
+model:
+  model_name_or_path: mistralai/Mistral-7B-Instruct-v0.3
+  trust_remote_code: false
+  torch_dtype: bfloat16
+  # Mistral supports flash_attention_2 on Ampere+ GPUs
+  attn_implementation: flash_attention_2
+  max_seq_length: 4096
+  use_cache: false
+
+# ── Quantization ─────────────────────────────────────────────────────────────
+quantization:
+  method: qlora
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_compute_dtype: bfloat16
+  bnb_4bit_use_double_quant: true
+
+# ── LoRA ─────────────────────────────────────────────────────────────────────
+lora:
+  r: 64
+  lora_alpha: 128
+  lora_dropout: 0.05
+  # Mistral architecture uses the same projection names as Llama
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+  bias: none
+  task_type: CAUSAL_LM
+  use_dora: false
+  use_rslora: false
+  modules_to_save: null
+
+# ── Training Hyperparameters ─────────────────────────────────────────────────
+training:
+  num_train_epochs: 3
+  per_device_train_batch_size: 4
+  per_device_eval_batch_size: 8
+  gradient_accumulation_steps: 4
+  learning_rate: 2.0e-4
+  weight_decay: 0.01
+  warmup_ratio: 0.03
+  lr_scheduler_type: cosine
+  max_grad_norm: 1.0
+  optim: paged_adamw_8bit
+  bf16: true
+  fp16: false
+  gradient_checkpointing: true
+  gradient_checkpointing_kwargs:
+    use_reentrant: false
+  logging_steps: 10
+  eval_strategy: steps
+  eval_steps: 100
+  save_strategy: steps
+  save_steps: 200
+  save_total_limit: 3
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  seed: 42
+  data_seed: 42
+  dataloader_num_workers: 4
+  dataloader_pin_memory: true
+  group_by_length: true
+  report_to:
+    - mlflow
+
+# ── SageMaker ────────────────────────────────────────────────────────────────
+sagemaker:
+  instance_type: ml.g5.2xlarge
+  instance_count: 1
+  volume_size_gb: 200
+  max_run_seconds: 86400
+  max_wait_seconds: 86400
+  use_spot_instances: false
+  spot_max_wait_ratio: 2.0
+  checkpoint_s3_uri: null
+  role_arn: ${SAGEMAKER_ROLE_ARN}
+  vpc_config: null
+  environment:
+    HF_TOKEN: ${HF_TOKEN:-}
+    WANDB_DISABLED: "true"
+
+# ── Dataset & Output ─────────────────────────────────────────────────────────
+# Uncomment dataset_id and remove dataset_path after running Prompts 17-18
+# dataset_id: ${DATASET_ID:-mistral-7b-instruct-v1}
+dataset_path: ./data/prepared/mistral_7b/
+output_s3_uri: ${OUTPUT_S3_URI:-s3://llm-finetune-artifacts/output/qlora-mistral-7b}
+resume_from_checkpoint: null

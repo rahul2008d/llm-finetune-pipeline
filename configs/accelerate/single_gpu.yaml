@@ -1,0 +1,31 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Accelerate config: Single GPU
+# ──────────────────────────────────────────────────────────────────────────────
+# USE WHEN:
+#   - Fine-tuning 7B / 8B models (Llama 3.1 8B, Mistral 7B)
+#   - QLoRA on a single A10G (24 GB) or A100 (40/80 GB)
+#   - Instance types: ml.g5.2xlarge, ml.g5.4xlarge, ml.p3.2xlarge
+#
+# NOT SUITABLE FOR:
+#   - 70B+ models (won't fit even in 4-bit on a single 24 GB GPU)
+#   - Multi-node training
+#
+# Pair with: configs/training/qlora_llama3_8b.yaml
+#            configs/training/qlora_mistral_7b.yaml
+#            configs/training/dora_llama3_8b.yaml
+# ──────────────────────────────────────────────────────────────────────────────
+
+compute_environment: LOCAL_MACHINE
+distributed_type: 'NO'
+downcast_bf16: 'no'
+machine_rank: 0
+main_training_function: main
+mixed_precision: bf16
+num_machines: 1
+num_processes: 1
+rdzv_backend: static
+same_network: true
+tpu_env: []
+tpu_use_cluster: false
+tpu_use_sudo: false
+use_cpu: false

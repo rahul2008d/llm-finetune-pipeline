@@ -1,0 +1,3 @@
+{% if system %}[INST] {{ system }}
+
+{{ instruction }} [/INST] {{ output }}</s>{% else %}[INST] {{ instruction }} [/INST] {{ output }}</s>{% endif %}

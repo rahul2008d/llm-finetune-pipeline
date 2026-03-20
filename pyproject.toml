@@ -1,0 +1,113 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "llm-finetune-pipeline"
+version = "0.1.0"
+description = "End-to-end LLM fine-tuning pipeline"
+readme = "README.md"
+requires-python = ">=3.10,<3.12"
+license = "MIT"
+authors = [{ name = "MLOps Team" }]
+dependencies = [
+    "torch>=2.2.0,<2.5.0",
+    "transformers>=4.44.0,<4.50.0",
+    "peft>=0.12.0,<0.15.0",
+    "trl>=0.9.0,<0.13.0",
+    "datasets>=2.20.0,<3.0.0",
+    "accelerate>=0.33.0,<0.36.0",
+    "safetensors>=0.4.0",
+    "pydantic>=2.8.0,<3.0.0",
+    "pydantic-settings>=2.4.0",
+    "pyyaml>=6.0",
+    "structlog>=24.1.0",
+    "boto3>=1.34.0",
+    "sagemaker>=2.225.0",
+    "mlflow>=2.15.0",
+    "typer>=0.12.0",
+    "rich>=13.7.0",
+    "tenacity>=8.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "mypy",
+    "pytest",
+    "pytest-cov",
+    "pytest-mock",
+    "pre-commit",
+    "detect-secrets",
+    "moto",
+]
+eval = [
+    "lm-eval>=0.4.0",
+    "rouge-score",
+    "nltk",
+    "sacrebleu",
+]
+data = [
+    "pandas>=2.2.0",
+    "pyarrow>=16.0.0",
+    "presidio-analyzer",
+    "presidio-anonymizer",
+]
+
+gpu = [
+    "bitsandbytes>=0.43.0,<0.45.0; sys_platform == 'linux'",
+]
+
+[project.scripts]
+llm-ft = "src.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["config", "data", "training", "evaluation", "serving", "monitoring", "utils"]
+
+[tool.mypy]
+strict = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["transformers.*", "datasets.*", "peft.*", "trl.*", "bitsandbytes.*", "accelerate.*", "sagemaker.*", "evaluate.*", "mlflow.*", "lm_eval.*", "rouge_score.*", "sacrebleu.*", "presidio_analyzer.*", "presidio_anonymizer.*", "moto.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=src --cov-report=term-missing"
+markers = [
+    "unit: unit tests",
+    "integration: integration tests",
+    "e2e: end-to-end tests",
+    "slow: slow-running tests",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.",
+]
+
+[dependency-groups]
+dev = [
+    "evaluate>=0.4.6",
+    "hypothesis>=6.151.9",
+]

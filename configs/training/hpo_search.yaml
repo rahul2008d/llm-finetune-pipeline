@@ -1,0 +1,65 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# SageMaker Hyperparameter Optimization (HPO) search space definition
+# ──────────────────────────────────────────────────────────────────────────────
+# This file is NOT a TrainingJobConfig — it defines the search space for
+# SageMaker's built-in Bayesian HPO tuner.
+#
+# Usage:
+#   from config.loader import load_hpo_config
+#   hpo = load_hpo_config("configs/training/hpo_search.yaml")
+#
+# The tuner will sweep over the hyperparameter_ranges below, creating up to
+# max_jobs training jobs (max_parallel at a time), and select the combination
+# that minimises eval_loss.
+
+# ── Base training config ─────────────────────────────────────────────────────
+# The HPO tuner starts from this config and overrides the swept parameters.
+base_config: configs/training/qlora_llama3_8b.yaml
+
+# ── Objective ────────────────────────────────────────────────────────────────
+objective:
+  metric_name: eval_loss
+  type: Minimize
+
+# ── Strategy ─────────────────────────────────────────────────────────────────
+strategy: Bayesian
+
+# ── Resource limits ──────────────────────────────────────────────────────────
+max_jobs: 20          # total trials to run
+max_parallel_jobs: 4  # concurrent trials (≤ account GPU quota)
+
+# ── Hyperparameter ranges ────────────────────────────────────────────────────
+hyperparameter_ranges:
+  learning_rate:
+    type: Continuous
+    min: 1.0e-5
+    max: 5.0e-4
+    scaling: Logarithmic   # samples uniformly in log-space
+
+  lora_r:
+    type: Categorical
+    values: [16, 32, 64, 128]
+
+  lora_alpha:
+    type: Categorical
+    values: [32, 64, 128, 256]
+
+  per_device_train_batch_size:
+    type: Categorical
+    values: [2, 4, 8]
+
+  warmup_ratio:
+    type: Continuous
+    min: 0.01
+    max: 0.1
+    scaling: Linear
+
+# ── Early stopping ───────────────────────────────────────────────────────────
+# Stop trials that are clearly worse than the current best after 25 % of
+# training steps — saves GPU hours.
+early_stopping_type: Auto
+
+# ── Tags ─────────────────────────────────────────────────────────────────────
+tags:
+  project: llm-finetune
+  stage: hpo

@@ -1,0 +1,4 @@
+# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/config/training.py
+# hypothesis_version: 6.141.1
+
+[0.0, 1e-06, 0.0002, 0.01, 0.03, 0.05, 0.3, 0.5, 1.0, 2.0, 10.0, 100, 128, 200, 256, 512, 4096, 32768, 86400, '%Y%m%d-%H%M%S', 'CAUSAL_LM', 'after', 'all', 'bfloat16', 'constant', 'cosine', 'cosine_with_restarts', 'dora', 'down_proj', 'eager', 'eval_loss', 'flash_attention_2', 'float16', 'float32', 'fp4', 'gate_proj', 'k_proj', 'linear', 'lora_only', 'ml.g5.2xlarge', 'mlflow', 'nf4', 'none', 'o_proj', 'paged_adamw_8bit', 'q_proj', 'qlora', 'sdpa', 'steps', 'up_proj', 'use_reentrant', 'v_proj']
