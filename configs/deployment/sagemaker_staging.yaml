@@ -1,0 +1,18 @@
+endpoint_name: llm-ft-staging-v1
+instance_type: ml.g5.xlarge
+initial_instance_count: 1
+role_arn: "${ssm:/llm-finetune/sagemaker-endpoint-role-arn}"
+autoscaling:
+  enabled: true
+  min_instances: 1
+  max_instances: 2
+  target_invocations: 30
+data_capture:
+  enabled: true
+  sampling_percentage: 100
+  s3_uri: "s3://llm-finetune-staging-model-artifacts/data-capture/"
+smoke_test:
+  required: true
+tags:
+  Environment: staging
+  Project: llm-finetune

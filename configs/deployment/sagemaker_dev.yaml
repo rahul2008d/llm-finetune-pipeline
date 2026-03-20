@@ -1,0 +1,13 @@
+endpoint_name: llm-ft-dev-v1
+instance_type: ml.g5.xlarge
+initial_instance_count: 1
+role_arn: "${ssm:/llm-finetune/sagemaker-endpoint-role-arn}"
+autoscaling:
+  enabled: false
+data_capture:
+  enabled: false
+smoke_test:
+  required: false
+tags:
+  Environment: dev
+  Project: llm-finetune

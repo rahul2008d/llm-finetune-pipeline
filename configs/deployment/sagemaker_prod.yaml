@@ -1,0 +1,30 @@
+endpoint_name: llm-ft-prod-v1
+instance_type: ml.g5.2xlarge
+initial_instance_count: 2
+role_arn: "${ssm:/llm-finetune/sagemaker-endpoint-role-arn}"
+autoscaling:
+  enabled: true
+  min_instances: 2
+  max_instances: 8
+  target_invocations: 50
+  scale_in_cooldown: 300
+  scale_out_cooldown: 60
+data_capture:
+  enabled: true
+  sampling_percentage: 10
+  s3_uri: "s3://llm-finetune-prod-model-artifacts/data-capture/"
+blue_green:
+  enabled: true
+  canary_pct: 0.1
+  bake_time_minutes: 30
+  rollback_alarm_names:
+    - "llm-finetune-prod-endpoint-5xx-rate"
+    - "llm-finetune-prod-endpoint-latency-p99"
+smoke_test:
+  required: true
+latency_test:
+  required: true
+  threshold_p99_ms: 5000
+tags:
+  Environment: production
+  Project: llm-finetune

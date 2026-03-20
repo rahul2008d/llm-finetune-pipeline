@@ -1,0 +1,9 @@
+model_name: my-custom-llm-v1
+model_source_s3_uri: "s3://llm-finetune-prod-model-artifacts/bedrock-models/model-v1/"
+role_arn: "${ssm:/llm-finetune/bedrock-import-role-arn}"
+provisioned_throughput:
+  model_units: 1
+  commitment: NO_COMMITMENT  # or ONE_MONTH, SIX_MONTH
+tags:
+  Environment: production
+  Project: llm-finetune
