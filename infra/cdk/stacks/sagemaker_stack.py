@@ -15,7 +15,7 @@ from constructs import Construct
 
 from constructs.training_vpc import TrainingVpc
 from constructs.pipeline_monitoring import PipelineMonitoring
-from constructs.secure_bucket import SecureBucket, SecureBucketProps
+from aws_cdk import aws_s3 as s3
 from stacks.storage_stack import StorageStack
 from stacks.iam_stack import IamStack
 from config.environments import EnvironmentConfig
@@ -97,13 +97,14 @@ class SageMakerStack(cdk.Stack):
         )
 
         # ---- CloudTrail ----
-        trail_bucket = SecureBucket(
+        trail_bucket = s3.Bucket(
             self, "CloudTrailBucket",
-            props=SecureBucketProps(
-                bucket_name_suffix="cloudtrail",
-                encryption_key=storage_stack.kms_key,
-                env_name=config.env_name,
-            ),
+            bucket_name=f"{PROJECT_NAME}-{config.env_name}-cloudtrail",
+            encryption=s3.BucketEncryption.S3_MANAGED,  # CloudTrail manages its own encryption
+            block_public_access=s3.BlockPublicAccess.BLOCK_ALL,
+            enforce_ssl=True,
+            removal_policy=cdk.RemovalPolicy.DESTROY,
+            auto_delete_objects=True,
         )
         retention_map = {90: "THREE_MONTHS", 365: "ONE_YEAR"}
         retention_name = retention_map.get(
@@ -117,7 +118,7 @@ class SageMakerStack(cdk.Stack):
         cloudtrail.Trail(
             self, "ApiTrail",
             trail_name=f"{PROJECT_NAME}-{config.env_name}-api-trail",
-            bucket=trail_bucket.bucket,
+            bucket=trail_bucket,
             send_to_cloud_watch_logs=True,
             cloud_watch_log_group=trail_log_group,
             is_multi_region_trail=False,

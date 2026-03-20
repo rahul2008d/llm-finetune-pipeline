@@ -1,0 +1,36 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6": {
+      "displayName": "dev-storage/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "162811752071-eu-west-1-a867cc83": {
+          "bucketName": "cdk-hnb659fds-assets-162811752071-eu-west-1",
+          "objectKey": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip",
+          "region": "eu-west-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::162811752071:role/cdk-hnb659fds-file-publishing-role-162811752071-eu-west-1"
+        }
+      }
+    },
+    "4a99d45aae4cf78c4b9e33478990dc4e5d7b3c216f4f177b990caca93997f5b4": {
+      "displayName": "dev-storage Template",
+      "source": {
+        "path": "dev-storage.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "162811752071-eu-west-1-2744474d": {
+          "bucketName": "cdk-hnb659fds-assets-162811752071-eu-west-1",
+          "objectKey": "4a99d45aae4cf78c4b9e33478990dc4e5d7b3c216f4f177b990caca93997f5b4.json",
+          "region": "eu-west-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::162811752071:role/cdk-hnb659fds-file-publishing-role-162811752071-eu-west-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

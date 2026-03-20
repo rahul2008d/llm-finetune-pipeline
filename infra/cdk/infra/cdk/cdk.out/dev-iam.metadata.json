@@ -1,0 +1,127 @@
+{
+  "/dev-iam": [
+    {
+      "type": "aws:cdk:stack-tags",
+      "data": [
+        {
+          "key": "Environment",
+          "value": "dev"
+        },
+        {
+          "key": "ManagedBy",
+          "value": "cdk"
+        },
+        {
+          "key": "Project",
+          "value": "llm-finetune"
+        },
+        {
+          "key": "Repository",
+          "value": "llm-finetune-pipeline"
+        }
+      ]
+    }
+  ],
+  "/dev-iam/TrainingRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingRoleArn"
+    }
+  ],
+  "/dev-iam/EndpointRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointRoleArn"
+    }
+  ],
+  "/dev-iam/BedrockImportRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BedrockImportRoleArn"
+    }
+  ],
+  "/dev-iam/PipelineRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineRoleArn"
+    }
+  ],
+  "/dev-iam/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/dev-iam/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/dev-iam/TrainingRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingRoleAA3C7BE5"
+    }
+  ],
+  "/dev-iam/EndpointRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointRole1A3BA5E6"
+    }
+  ],
+  "/dev-iam/BedrockImportRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BedrockImportRole3F066C62"
+    }
+  ],
+  "/dev-iam/PipelineRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineRoleDCFDBB91"
+    }
+  ],
+  "/dev-iam/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    }
+  ],
+  "/dev-iam/Exports/Output{\"Fn::GetAtt\":[\"PipelineRoleDCFDBB91\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttPipelineRoleDCFDBB91ArnDDB5443C"
+    }
+  ],
+  "/dev-iam/Boundary/Boundary/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Boundary2D6687BD"
+    }
+  ],
+  "/dev-iam/TrainingRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingRoleDefaultPolicyAE3F3CE7"
+    }
+  ],
+  "/dev-iam/EndpointRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointRoleDefaultPolicy712BE0F1"
+    }
+  ],
+  "/dev-iam/BedrockImportRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BedrockImportRoleDefaultPolicy091345FA"
+    }
+  ],
+  "/dev-iam/PipelineRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineRoleDefaultPolicy77A82A74"
+    }
+  ]
+}

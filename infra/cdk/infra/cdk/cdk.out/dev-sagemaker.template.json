@@ -1,0 +1,1059 @@
+{
+ "Resources": {
+  "MonitoringAlertTopicB48B06C2": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "LLM Fine-Tuning Alerts (dev)",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "TopicName": "llm-finetune-dev-pipeline-alerts"
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/Monitoring/AlertTopic/Resource"
+   }
+  },
+  "MonitoringAlertTopicrahuldattaawsgmailcomBF0F7B77": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": "rahuldatta.aws@gmail.com",
+    "Protocol": "email",
+    "TopicArn": {
+     "Ref": "MonitoringAlertTopicB48B06C2"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/Monitoring/AlertTopic/rahuldatta.aws@gmail.com/Resource"
+   }
+  },
+  "MonitoringAlertTopicPolicyE767CC17": {
+   "Type": "AWS::SNS::TopicPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "MonitoringAlertTopicB48B06C2"
+       },
+       "Sid": "0"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/Monitoring/AlertTopic/Policy/Resource"
+   }
+  },
+  "MonitoringTrainingJobFailureEC8E3B0C": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": "A SageMaker training job has failed",
+    "AlarmName": "llm-finetune-dev-training-job-failure",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "MetricName": "TrainingJobsFailed",
+    "Namespace": "AWS/SageMaker",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/Monitoring/TrainingJobFailure/Resource"
+   }
+  },
+  "MonitoringEndpoint5xxRate889C78F6": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": "Endpoint 5xx error rate exceeds 1% for 15 minutes",
+    "AlarmName": "llm-finetune-dev-endpoint-5xx-rate",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 3,
+    "Metrics": [
+     {
+      "Expression": "IF(invocations > 0, (errors / invocations) * 100, 0)",
+      "Id": "expr_1",
+      "ReturnData": true
+     },
+     {
+      "Id": "errors",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "Invocation5XXErrors",
+        "Namespace": "AWS/SageMaker"
+       },
+       "Period": 300,
+       "Stat": "Sum"
+      },
+      "ReturnData": false
+     },
+     {
+      "Id": "invocations",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "Invocations",
+        "Namespace": "AWS/SageMaker"
+       },
+       "Period": 300,
+       "Stat": "Sum"
+      },
+      "ReturnData": false
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/Monitoring/Endpoint5xxRate/Resource"
+   }
+  },
+  "MonitoringEndpointLatencyP99CE50FCAE": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "MonitoringAlertTopicB48B06C2"
+     }
+    ],
+    "AlarmDescription": "Endpoint P99 latency exceeds 10s for 15 minutes",
+    "AlarmName": "llm-finetune-dev-endpoint-latency-p99",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 3,
+    "ExtendedStatistic": "p99",
+    "MetricName": "ModelLatency",
+    "Namespace": "AWS/SageMaker",
+    "Period": 300,
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "Threshold": 10000000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/Monitoring/EndpointLatencyP99/Resource"
+   }
+  },
+  "MonitoringDashboard0C3675C6": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"start\":\"-PT6H\",\"widgets\":[{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Training Job Failures\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/SageMaker\",\"TrainingJobsFailed\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Endpoint Error Rate (%)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"IF(invocations > 0, (errors / invocations) * 100, 0)\",\"expression\":\"IF(invocations > 0, (errors / invocations) * 100, 0)\"}],[\"AWS/SageMaker\",\"Invocation5XXErrors\",{\"id\":\"errors\",\"visible\":false,\"stat\":\"Sum\"}],[\"AWS/SageMaker\",\"Invocations\",{\"id\":\"invocations\",\"visible\":false,\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Endpoint Latency (P50/P90/P99)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/SageMaker\",\"ModelLatency\",{\"stat\":\"p50\"}],[\"AWS/SageMaker\",\"ModelLatency\",{\"stat\":\"p90\"}],[\"AWS/SageMaker\",\"ModelLatency\",{\"stat\":\"p99\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Invocations\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/SageMaker\",\"Invocations\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "llm-finetune-dev-overview"
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/Monitoring/Dashboard/Resource"
+   }
+  },
+  "Domain": {
+   "Type": "AWS::SageMaker::Domain",
+   "Properties": {
+    "AppNetworkAccessType": "VpcOnly",
+    "AuthMode": "IAM",
+    "DefaultUserSettings": {
+     "ExecutionRole": {
+      "Fn::ImportValue": "dev-iam:ExportsOutputFnGetAttPipelineRoleDCFDBB91ArnDDB5443C"
+     },
+     "SecurityGroups": [
+      {
+       "Fn::ImportValue": "dev-network:ExportsOutputFnGetAttTrainingVpcTrainingSG9B5E9840GroupId23F8CB27"
+      }
+     ]
+    },
+    "DomainName": "llm-finetune-dev",
+    "SubnetIds": [
+     {
+      "Fn::ImportValue": "dev-network:ExportsOutputRefTrainingVpcPrivateSubnet1Subnet290288B70E1137F2"
+     },
+     {
+      "Fn::ImportValue": "dev-network:ExportsOutputRefTrainingVpcPrivateSubnet2Subnet00DAE6EE5E27CF94"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Fn::ImportValue": "dev-network:ExportsOutputRefTrainingVpcD9FD96E150CF70DA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/Domain"
+   }
+  },
+  "MonthlyBudget": {
+   "Type": "AWS::Budgets::Budget",
+   "Properties": {
+    "Budget": {
+     "BudgetLimit": {
+      "Amount": 200,
+      "Unit": "USD"
+     },
+     "BudgetName": "llm-finetune-dev-monthly",
+     "BudgetType": "COST",
+     "CostFilters": {
+      "TagKeyValue": [
+       "Project$llm-finetune"
+      ]
+     },
+     "TimeUnit": "MONTHLY"
+    },
+    "NotificationsWithSubscribers": [
+     {
+      "Notification": {
+       "ComparisonOperator": "GREATER_THAN",
+       "NotificationType": "ACTUAL",
+       "Threshold": 50,
+       "ThresholdType": "PERCENTAGE"
+      },
+      "Subscribers": [
+       {
+        "Address": {
+         "Ref": "MonitoringAlertTopicB48B06C2"
+        },
+        "SubscriptionType": "SNS"
+       }
+      ]
+     },
+     {
+      "Notification": {
+       "ComparisonOperator": "GREATER_THAN",
+       "NotificationType": "ACTUAL",
+       "Threshold": 80,
+       "ThresholdType": "PERCENTAGE"
+      },
+      "Subscribers": [
+       {
+        "Address": {
+         "Ref": "MonitoringAlertTopicB48B06C2"
+        },
+        "SubscriptionType": "SNS"
+       }
+      ]
+     },
+     {
+      "Notification": {
+       "ComparisonOperator": "GREATER_THAN",
+       "NotificationType": "ACTUAL",
+       "Threshold": 100,
+       "ThresholdType": "PERCENTAGE"
+      },
+      "Subscribers": [
+       {
+        "Address": {
+         "Ref": "MonitoringAlertTopicB48B06C2"
+        },
+        "SubscriptionType": "SNS"
+       }
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/MonthlyBudget"
+   }
+  },
+  "CloudTrailBucket6E6EF1BF": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "BucketKeyEnabled": true,
+       "ServerSideEncryptionByDefault": {
+        "KMSMasterKeyID": {
+         "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttSageMakerKey0E10941AArn0EA61C6A"
+        },
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    },
+    "BucketName": "llm-finetune-dev-cloudtrail",
+    "LoggingConfiguration": {
+     "LogFilePrefix": "access-logs/"
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/CloudTrailBucket/Bucket/Resource"
+   }
+  },
+  "CloudTrailBucketPolicyDD50BC42": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "CloudTrailBucket6E6EF1BF"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CloudTrailBucket6E6EF1BF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CloudTrailBucket6E6EF1BF",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "s3:PutObject",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "CloudTrailBucket6E6EF1BF",
+           "Arn"
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": "162811752071"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "logging.s3.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "CloudTrailBucket6E6EF1BF",
+            "Arn"
+           ]
+          },
+          "/access-logs/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CloudTrailBucket6E6EF1BF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CloudTrailBucket6E6EF1BF",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "s3:PutObject",
+       "Condition": {
+        "StringNotEquals": {
+         "s3:x-amz-server-side-encryption": "aws:kms"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "CloudTrailBucket6E6EF1BF",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       },
+       "Sid": "DenyUnencryptedUploads"
+      },
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "NumericLessThan": {
+         "s3:TlsVersion": "1.2"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CloudTrailBucket6E6EF1BF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CloudTrailBucket6E6EF1BF",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ],
+       "Sid": "DenyInsecureTLS"
+      },
+      {
+       "Action": "s3:GetBucketAcl",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudtrail.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "CloudTrailBucket6E6EF1BF",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "s3:PutObject",
+       "Condition": {
+        "StringEquals": {
+         "s3:x-amz-acl": "bucket-owner-full-control"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudtrail.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "CloudTrailBucket6E6EF1BF",
+            "Arn"
+           ]
+          },
+          "/AWSLogs/162811752071/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/CloudTrailBucket/Bucket/Policy/Resource"
+   }
+  },
+  "CloudTrailBucketAutoDeleteObjectsCustomResource55C0FCCA": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "CloudTrailBucket6E6EF1BF"
+    }
+   },
+   "DependsOn": [
+    "CloudTrailBucketPolicyDD50BC42"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/CloudTrailBucket/Bucket/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-162811752071-eu-west-1",
+     "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "CloudTrailBucket6E6EF1BF"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+    "aws:asset:property": "Code"
+   }
+  },
+  "TrailLogGroup7A1F916A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 90,
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/TrailLogGroup/Resource"
+   }
+  },
+  "ApiTrailLogsRoleC266668E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudtrail.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/ApiTrail/LogsRole/Resource"
+   }
+  },
+  "ApiTrailLogsRoleDefaultPolicyA05C4F57": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "TrailLogGroup7A1F916A",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiTrailLogsRoleDefaultPolicyA05C4F57",
+    "Roles": [
+     {
+      "Ref": "ApiTrailLogsRoleC266668E"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/ApiTrail/LogsRole/DefaultPolicy/Resource"
+   }
+  },
+  "ApiTrail86C05344": {
+   "Type": "AWS::CloudTrail::Trail",
+   "Properties": {
+    "CloudWatchLogsLogGroupArn": {
+     "Fn::GetAtt": [
+      "TrailLogGroup7A1F916A",
+      "Arn"
+     ]
+    },
+    "CloudWatchLogsRoleArn": {
+     "Fn::GetAtt": [
+      "ApiTrailLogsRoleC266668E",
+      "Arn"
+     ]
+    },
+    "EnableLogFileValidation": true,
+    "EventSelectors": [
+     {
+      "IncludeManagementEvents": true,
+      "ReadWriteType": "All"
+     }
+    ],
+    "IncludeGlobalServiceEvents": false,
+    "IsLogging": true,
+    "IsMultiRegionTrail": false,
+    "S3BucketName": {
+     "Ref": "CloudTrailBucket6E6EF1BF"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "TrailName": "llm-finetune-dev-api-trail"
+   },
+   "DependsOn": [
+    "ApiTrailLogsRoleDefaultPolicyA05C4F57",
+    "ApiTrailLogsRoleC266668E",
+    "CloudTrailBucketPolicyDD50BC42"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/ApiTrail/Resource"
+   }
+  },
+  "TrainingJobStateChange7A882E4A": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "detail": {
+      "TrainingJobStatus": [
+       "Completed",
+       "Failed",
+       "Stopped"
+      ]
+     },
+     "detail-type": [
+      "SageMaker Training Job State Change"
+     ],
+     "source": [
+      "aws.sagemaker"
+     ]
+    },
+    "Name": "llm-finetune-dev-training-state-change",
+    "State": "ENABLED",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "Targets": [
+     {
+      "Arn": {
+       "Ref": "MonitoringAlertTopicB48B06C2"
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/TrainingJobStateChange/Resource"
+   }
+  },
+  "EndpointStatusChangeF5AF726A": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "detail-type": [
+      "SageMaker Endpoint State Change"
+     ],
+     "source": [
+      "aws.sagemaker"
+     ]
+    },
+    "Name": "llm-finetune-dev-endpoint-state-change",
+    "State": "ENABLED",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "Targets": [
+     {
+      "Arn": {
+       "Ref": "MonitoringAlertTopicB48B06C2"
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/EndpointStatusChange/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/5VQy27DIBD8lvhMaPM49ZaH1EulRElvVVVhvHWIeVgsJI0s/r1g8jzmtLMzsws7YzqeTunrgB1xyKtmKEVJu61jvCGR+ulQI+0+TSs4WfzqDLa+RG5F64TRiX3oe8vaSMFP14ncBsKl8dWROb6j3Uwyq5IjgyXDXWmYrRJ1bQJBVoNiDViaeKOY0KT0VQ0OEzPvIcEJ7eaeNxH2ZEJfXaHEn9DFW3F/XLoq2nsJabbOvDNLkOBgVe6BOyzCN8nS7ZL7/ondeSAm6kCB7lcHIk0dY/0w9bs1vk3bL/gckrNMyBh8Kn2MCQQimKLdxkhIXF9v/7uEDIf0TLT5sy3WEMjCozNqA2i85Vm44gdpbc1BVGDnDIHMEMHFz9dC12lm5V3rXSDrk9sZ/TKhoxEdTQZ7FGJovXZCAd3k+g9Eiz8zWgIAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-sagemaker/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "DomainId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Domain",
+     "DomainId"
+    ]
+   }
+  },
+  "SNSTopicArn": {
+   "Value": {
+    "Ref": "MonitoringAlertTopicB48B06C2"
+   }
+  },
+  "DashboardUrl": {
+   "Value": "https://eu-west-1.console.aws.amazon.com/cloudwatch/home?region=eu-west-1#dashboards:name=llm-finetune-dev-overview"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,791 @@
+{
+ "Resources": {
+  "Boundary2D6687BD": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+    "Description": "",
+    "ManagedPolicyName": "llm-finetune-dev-boundary",
+    "Path": "/",
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "*",
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "AllowMostActions"
+      },
+      {
+       "Action": [
+        "account:*",
+        "iam:AttachRolePolicy",
+        "iam:CreatePolicy",
+        "iam:CreateRole",
+        "iam:CreateUser",
+        "iam:DeletePolicy",
+        "iam:DeleteRole",
+        "iam:DeleteRolePolicy",
+        "iam:DeleteUser",
+        "iam:DetachRolePolicy",
+        "iam:PutRolePolicy",
+        "iam:UpdateAssumeRolePolicy",
+        "organizations:*"
+       ],
+       "Effect": "Deny",
+       "Resource": "*",
+       "Sid": "DenyIAMMutations"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-iam/Boundary/Boundary/Resource"
+   }
+  },
+  "TrainingRoleAA3C7BE5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sagemaker.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PermissionsBoundary": {
+     "Ref": "Boundary2D6687BD"
+    },
+    "RoleName": "llm-finetune-dev-sagemaker-training",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-iam/TrainingRole/Resource"
+   }
+  },
+  "TrainingRoleDefaultPolicyAE3F3CE7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttMLflowBucket04EEF01DArn6943053D"
+        },
+        {
+         "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttModelArtifactsBucket2C3831B7Arn5D5B3740"
+        },
+        {
+         "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttTrainingDataBucketFD9236C9ArnD48C3785"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttMLflowBucket04EEF01DArn6943053D"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttModelArtifactsBucket2C3831B7Arn5D5B3740"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttTrainingDataBucketFD9236C9ArnD48C3785"
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttSageMakerKey0E10941AArn0EA61C6A"
+       }
+      },
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttTrainingRepo66C57C98Arn55F4867B"
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:DescribeLogStreams",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:logs:eu-west-1:162811752071:log-group:/aws/sagemaker/*",
+       "Sid": "CloudWatchLogs"
+      },
+      {
+       "Action": "cloudwatch:PutMetricData",
+       "Condition": {
+        "StringEquals": {
+         "cloudwatch:namespace": "LLMFineTuning/llm-finetune"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "CloudWatchMetrics"
+      },
+      {
+       "Action": [
+        "ssm:GetParameter",
+        "ssm:GetParameters"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:ssm:eu-west-1:162811752071:parameter/llm-finetune/*",
+       "Sid": "SSMRead"
+      },
+      {
+       "Action": "secretsmanager:GetSecretValue",
+       "Effect": "Allow",
+       "Resource": "arn:aws:secretsmanager:eu-west-1:162811752071:secret:llm-finetune/*",
+       "Sid": "SecretsRead"
+      },
+      {
+       "Action": [
+        "ec2:CreateNetworkInterface",
+        "ec2:CreateNetworkInterfacePermission",
+        "ec2:DeleteNetworkInterface",
+        "ec2:DeleteNetworkInterfacePermission",
+        "ec2:DescribeDhcpOptions",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeVpcs"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "ec2:Vpc": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:ec2:eu-west-1:162811752071:vpc/",
+            {
+             "Fn::ImportValue": "dev-network:ExportsOutputRefTrainingVpcD9FD96E150CF70DA"
+            }
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "VPCNetworking"
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "ECRAuth"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TrainingRoleDefaultPolicyAE3F3CE7",
+    "Roles": [
+     {
+      "Ref": "TrainingRoleAA3C7BE5"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-iam/TrainingRole/DefaultPolicy/Resource"
+   }
+  },
+  "EndpointRole1A3BA5E6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sagemaker.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PermissionsBoundary": {
+     "Ref": "Boundary2D6687BD"
+    },
+    "RoleName": "llm-finetune-dev-sagemaker-endpoint",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-iam/EndpointRole/Resource"
+   }
+  },
+  "EndpointRoleDefaultPolicy712BE0F1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttModelArtifactsBucket2C3831B7Arn5D5B3740"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttModelArtifactsBucket2C3831B7Arn5D5B3740"
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttSageMakerKey0E10941AArn0EA61C6A"
+       }
+      },
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttServingRepoAB800127Arn63BEBC9F"
+        },
+        {
+         "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttTrainingRepo66C57C98Arn55F4867B"
+        }
+       ]
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:logs:eu-west-1:162811752071:log-group:/aws/sagemaker/*",
+       "Sid": "CloudWatchLogs"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EndpointRoleDefaultPolicy712BE0F1",
+    "Roles": [
+     {
+      "Ref": "EndpointRole1A3BA5E6"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-iam/EndpointRole/DefaultPolicy/Resource"
+   }
+  },
+  "BedrockImportRole3F066C62": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PermissionsBoundary": {
+     "Ref": "Boundary2D6687BD"
+    },
+    "RoleName": "llm-finetune-dev-bedrock-import",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-iam/BedrockImportRole/Resource"
+   }
+  },
+  "BedrockImportRoleDefaultPolicy091345FA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttModelArtifactsBucket2C3831B7Arn5D5B3740"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttModelArtifactsBucket2C3831B7Arn5D5B3740"
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttSageMakerKey0E10941AArn0EA61C6A"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "BedrockImportRoleDefaultPolicy091345FA",
+    "Roles": [
+     {
+      "Ref": "BedrockImportRole3F066C62"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-iam/BedrockImportRole/DefaultPolicy/Resource"
+   }
+  },
+  "PipelineRoleDCFDBB91": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": [
+         "sagemaker.amazonaws.com",
+         "states.amazonaws.com"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PermissionsBoundary": {
+     "Ref": "Boundary2D6687BD"
+    },
+    "RoleName": "llm-finetune-dev-pipeline-execution",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-iam/PipelineRole/Resource"
+   }
+  },
+  "PipelineRoleDefaultPolicy77A82A74": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "iam:PassRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:PassedToService": [
+          "sagemaker.amazonaws.com",
+          "bedrock.amazonaws.com"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BedrockImportRole3F066C62",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "EndpointRole1A3BA5E6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "TrainingRoleAA3C7BE5",
+          "Arn"
+         ]
+        }
+       ],
+       "Sid": "PassRoleToTrainingAndEndpoint"
+      },
+      {
+       "Action": [
+        "sagemaker:AddTags",
+        "sagemaker:CreateEndpoint",
+        "sagemaker:CreateEndpointConfig",
+        "sagemaker:CreateHyperParameterTuningJob",
+        "sagemaker:CreateModel",
+        "sagemaker:CreateModelPackage",
+        "sagemaker:CreateModelPackageGroup",
+        "sagemaker:CreateTrainingJob",
+        "sagemaker:DeleteEndpoint",
+        "sagemaker:DeleteEndpointConfig",
+        "sagemaker:DeleteModel",
+        "sagemaker:DescribeEndpoint",
+        "sagemaker:DescribeHyperParameterTuningJob",
+        "sagemaker:DescribeModelPackage",
+        "sagemaker:DescribeModelPackageGroup",
+        "sagemaker:DescribeTrainingJob",
+        "sagemaker:InvokeEndpoint",
+        "sagemaker:ListModelPackages",
+        "sagemaker:ListTrainingJobs",
+        "sagemaker:StopHyperParameterTuningJob",
+        "sagemaker:StopTrainingJob",
+        "sagemaker:UpdateEndpoint",
+        "sagemaker:UpdateModelPackage"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:sagemaker:eu-west-1:162811752071:*/llm-finetune-*",
+       "Sid": "SageMakerJobManagement"
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttMLflowBucket04EEF01DArn6943053D"
+        },
+        {
+         "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttModelArtifactsBucket2C3831B7Arn5D5B3740"
+        },
+        {
+         "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttTrainingDataBucketFD9236C9ArnD48C3785"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttMLflowBucket04EEF01DArn6943053D"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttModelArtifactsBucket2C3831B7Arn5D5B3740"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttTrainingDataBucketFD9236C9ArnD48C3785"
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::ImportValue": "dev-storage:ExportsOutputFnGetAttSageMakerKey0E10941AArn0EA61C6A"
+       }
+      },
+      {
+       "Action": [
+        "cloudwatch:PutMetricData",
+        "events:PutEvents",
+        "events:PutRule",
+        "events:PutTargets",
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "EventBridgeAndCloudWatch"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipelineRoleDefaultPolicy77A82A74",
+    "Roles": [
+     {
+      "Ref": "PipelineRoleDCFDBB91"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-iam/PipelineRole/DefaultPolicy/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/zPSMzIx0TNQTCwv1k1OydbNyUzSqw4uSUzO1gEKxWcm5upV+ybmJaanpgTk52QmV+o4p+WhCgTl56SCRME0QhGEVQti+peWFJSW1OoEVJZk5OfpG+sZGuoZGitmFWdm6haV5pVk5qbqBUFoAMYkfZOQAAAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-iam/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "TrainingRoleArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TrainingRoleAA3C7BE5",
+     "Arn"
+    ]
+   }
+  },
+  "EndpointRoleArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "EndpointRole1A3BA5E6",
+     "Arn"
+    ]
+   }
+  },
+  "BedrockImportRoleArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BedrockImportRole3F066C62",
+     "Arn"
+    ]
+   }
+  },
+  "PipelineRoleArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "PipelineRoleDCFDBB91",
+     "Arn"
+    ]
+   }
+  },
+  "ExportsOutputFnGetAttPipelineRoleDCFDBB91ArnDDB5443C": {
+   "Value": {
+    "Fn::GetAtt": [
+     "PipelineRoleDCFDBB91",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "dev-iam:ExportsOutputFnGetAttPipelineRoleDCFDBB91ArnDDB5443C"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

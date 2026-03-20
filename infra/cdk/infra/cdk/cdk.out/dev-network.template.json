@@ -1,0 +1,1814 @@
+{
+ "Resources": {
+  "TrainingVpcD9FD96E1": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/Resource"
+   }
+  },
+  "TrainingVpcPublicSubnet1Subnet2E1DA12D": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "eu-west-1a",
+    "CidrBlock": "10.0.0.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/PublicSubnet1"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PublicSubnet1/Subnet"
+   }
+  },
+  "TrainingVpcPublicSubnet1RouteTableA3528D8E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/PublicSubnet1"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PublicSubnet1/RouteTable"
+   }
+  },
+  "TrainingVpcPublicSubnet1RouteTableAssociationF23AEDE9": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TrainingVpcPublicSubnet1RouteTableA3528D8E"
+    },
+    "SubnetId": {
+     "Ref": "TrainingVpcPublicSubnet1Subnet2E1DA12D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PublicSubnet1/RouteTableAssociation"
+   }
+  },
+  "TrainingVpcPublicSubnet1DefaultRoute890EEBCE": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "TrainingVpcIGW18682773"
+    },
+    "RouteTableId": {
+     "Ref": "TrainingVpcPublicSubnet1RouteTableA3528D8E"
+    }
+   },
+   "DependsOn": [
+    "TrainingVpcVPCGW2DF96D97"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PublicSubnet1/DefaultRoute"
+   }
+  },
+  "TrainingVpcPublicSubnet1EIP07EE6C52": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/PublicSubnet1"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PublicSubnet1/EIP"
+   }
+  },
+  "TrainingVpcPublicSubnet1NATGateway106E3099": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "TrainingVpcPublicSubnet1EIP07EE6C52",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "TrainingVpcPublicSubnet1Subnet2E1DA12D"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/PublicSubnet1"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ]
+   },
+   "DependsOn": [
+    "TrainingVpcPublicSubnet1DefaultRoute890EEBCE",
+    "TrainingVpcPublicSubnet1RouteTableAssociationF23AEDE9"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PublicSubnet1/NATGateway"
+   }
+  },
+  "TrainingVpcPublicSubnet2Subnet869F26C0": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "eu-west-1b",
+    "CidrBlock": "10.0.1.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/PublicSubnet2"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PublicSubnet2/Subnet"
+   }
+  },
+  "TrainingVpcPublicSubnet2RouteTable3B651E79": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/PublicSubnet2"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PublicSubnet2/RouteTable"
+   }
+  },
+  "TrainingVpcPublicSubnet2RouteTableAssociation914BCE1E": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TrainingVpcPublicSubnet2RouteTable3B651E79"
+    },
+    "SubnetId": {
+     "Ref": "TrainingVpcPublicSubnet2Subnet869F26C0"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PublicSubnet2/RouteTableAssociation"
+   }
+  },
+  "TrainingVpcPublicSubnet2DefaultRoute46904177": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "TrainingVpcIGW18682773"
+    },
+    "RouteTableId": {
+     "Ref": "TrainingVpcPublicSubnet2RouteTable3B651E79"
+    }
+   },
+   "DependsOn": [
+    "TrainingVpcVPCGW2DF96D97"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PublicSubnet2/DefaultRoute"
+   }
+  },
+  "TrainingVpcPrivateSubnet1Subnet290288B7": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "eu-west-1a",
+    "CidrBlock": "10.0.4.0/22",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/PrivateSubnet1"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PrivateSubnet1/Subnet"
+   }
+  },
+  "TrainingVpcPrivateSubnet1RouteTable9797C1C1": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/PrivateSubnet1"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PrivateSubnet1/RouteTable"
+   }
+  },
+  "TrainingVpcPrivateSubnet1RouteTableAssociation7C4E95B1": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TrainingVpcPrivateSubnet1RouteTable9797C1C1"
+    },
+    "SubnetId": {
+     "Ref": "TrainingVpcPrivateSubnet1Subnet290288B7"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PrivateSubnet1/RouteTableAssociation"
+   }
+  },
+  "TrainingVpcPrivateSubnet1DefaultRoute341B4082": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "TrainingVpcPublicSubnet1NATGateway106E3099"
+    },
+    "RouteTableId": {
+     "Ref": "TrainingVpcPrivateSubnet1RouteTable9797C1C1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PrivateSubnet1/DefaultRoute"
+   }
+  },
+  "TrainingVpcPrivateSubnet2Subnet00DAE6EE": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "eu-west-1b",
+    "CidrBlock": "10.0.8.0/22",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/PrivateSubnet2"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PrivateSubnet2/Subnet"
+   }
+  },
+  "TrainingVpcPrivateSubnet2RouteTableF2F1DEFA": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/PrivateSubnet2"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PrivateSubnet2/RouteTable"
+   }
+  },
+  "TrainingVpcPrivateSubnet2RouteTableAssociation7DBE4EC4": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TrainingVpcPrivateSubnet2RouteTableF2F1DEFA"
+    },
+    "SubnetId": {
+     "Ref": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PrivateSubnet2/RouteTableAssociation"
+   }
+  },
+  "TrainingVpcPrivateSubnet2DefaultRoute8A0B1744": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "TrainingVpcPublicSubnet1NATGateway106E3099"
+    },
+    "RouteTableId": {
+     "Ref": "TrainingVpcPrivateSubnet2RouteTableF2F1DEFA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/PrivateSubnet2/DefaultRoute"
+   }
+  },
+  "TrainingVpcIsolatedSubnet1Subnet90A12B68": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "eu-west-1a",
+    "CidrBlock": "10.0.12.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/IsolatedSubnet1"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/IsolatedSubnet1/Subnet"
+   }
+  },
+  "TrainingVpcIsolatedSubnet1RouteTableBA7EE9C3": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/IsolatedSubnet1"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/IsolatedSubnet1/RouteTable"
+   }
+  },
+  "TrainingVpcIsolatedSubnet1RouteTableAssociation147FE4BA": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TrainingVpcIsolatedSubnet1RouteTableBA7EE9C3"
+    },
+    "SubnetId": {
+     "Ref": "TrainingVpcIsolatedSubnet1Subnet90A12B68"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/IsolatedSubnet1/RouteTableAssociation"
+   }
+  },
+  "TrainingVpcIsolatedSubnet2Subnet5DA32EE6": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "eu-west-1b",
+    "CidrBlock": "10.0.13.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/IsolatedSubnet2"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/IsolatedSubnet2/Subnet"
+   }
+  },
+  "TrainingVpcIsolatedSubnet2RouteTableD386A3F7": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/IsolatedSubnet2"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/IsolatedSubnet2/RouteTable"
+   }
+  },
+  "TrainingVpcIsolatedSubnet2RouteTableAssociation46A519D5": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "TrainingVpcIsolatedSubnet2RouteTableD386A3F7"
+    },
+    "SubnetId": {
+     "Ref": "TrainingVpcIsolatedSubnet2Subnet5DA32EE6"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/IsolatedSubnet2/RouteTableAssociation"
+   }
+  },
+  "TrainingVpcIGW18682773": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/IGW"
+   }
+  },
+  "TrainingVpcVPCGW2DF96D97": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "TrainingVpcIGW18682773"
+    },
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/VPCGW"
+   }
+  },
+  "TrainingVpcS3Gateway740E8011": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "RouteTableIds": [
+     {
+      "Ref": "TrainingVpcPrivateSubnet1RouteTable9797C1C1"
+     },
+     {
+      "Ref": "TrainingVpcPrivateSubnet2RouteTableF2F1DEFA"
+     },
+     {
+      "Ref": "TrainingVpcIsolatedSubnet1RouteTableBA7EE9C3"
+     },
+     {
+      "Ref": "TrainingVpcIsolatedSubnet2RouteTableD386A3F7"
+     }
+    ],
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".s3"
+      ]
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcEndpointType": "Gateway",
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/S3Gateway/Resource"
+   }
+  },
+  "TrainingVpcFlowLogIAMRole3E0B0E7B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "vpc-flow-logs.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/FlowLog"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/FlowLog/IAMRole/Resource"
+   }
+  },
+  "TrainingVpcFlowLogIAMRoleDefaultPolicy9EE64770": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:DescribeLogStreams",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "TrainingVpcFlowLogGroup446444F8",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TrainingVpcFlowLogIAMRoleDefaultPolicy9EE64770",
+    "Roles": [
+     {
+      "Ref": "TrainingVpcFlowLogIAMRole3E0B0E7B"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/FlowLog/IAMRole/DefaultPolicy/Resource"
+   }
+  },
+  "TrainingVpcFlowLog8ABF05C8": {
+   "Type": "AWS::EC2::FlowLog",
+   "Properties": {
+    "DeliverLogsPermissionArn": {
+     "Fn::GetAtt": [
+      "TrainingVpcFlowLogIAMRole3E0B0E7B",
+      "Arn"
+     ]
+    },
+    "LogDestinationType": "cloud-watch-logs",
+    "LogGroupName": {
+     "Ref": "TrainingVpcFlowLogGroup446444F8"
+    },
+    "ResourceId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    },
+    "ResourceType": "VPC",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Name",
+      "Value": "dev-network/TrainingVpc/Vpc/FlowLog"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "TrafficType": "ALL"
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/Vpc/FlowLog/FlowLog"
+   }
+  },
+  "TrainingVpcTrainingSG9B5E9840": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "SageMaker training jobs - outbound to VPC endpoints + NAT",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "HTTPS outbound via NAT for ECR and model downloads",
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/TrainingSG/Resource"
+   }
+  },
+  "TrainingVpcTrainingSGfromdevnetworkTrainingVpcTrainingSG897601E5ALLTRAFFIC9A5BBBEA": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Inter-node communication for distributed training",
+    "GroupId": {
+     "Fn::GetAtt": [
+      "TrainingVpcTrainingSG9B5E9840",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "-1",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "TrainingVpcTrainingSG9B5E9840",
+      "GroupId"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/TrainingSG/from devnetworkTrainingVpcTrainingSG897601E5:ALL TRAFFIC"
+   }
+  },
+  "TrainingVpcEndpointSGD3F72AF8": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "VPC endpoints - inbound HTTPS from training SG",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "TrainingVpcD9FD96E1",
+        "CidrBlock"
+       ]
+      },
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "TrainingVpcD9FD96E1",
+           "CidrBlock"
+          ]
+         },
+         ":443"
+        ]
+       ]
+      },
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/EndpointSG/Resource"
+   }
+  },
+  "TrainingVpcEndpointSGfromdevnetworkTrainingVpcTrainingSG897601E544390711286": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "HTTPS from training jobs to VPC endpoints",
+    "FromPort": 443,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "TrainingVpcEndpointSGD3F72AF8",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "TrainingVpcTrainingSG9B5E9840",
+      "GroupId"
+     ]
+    },
+    "ToPort": 443
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/EndpointSG/from devnetworkTrainingVpcTrainingSG897601E5:443"
+   }
+  },
+  "TrainingVpcSageMakerEndpointSG3543D2FF": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "SageMaker inference endpoints - inbound HTTPS from app tier",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "10.0.0.0/16",
+      "Description": "HTTPS from VPC CIDR to inference endpoints",
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/SageMakerEndpointSG/Resource"
+   }
+  },
+  "TrainingVpcSagemakerApiEndpointC78125B0": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "TrainingVpcEndpointSGD3F72AF8",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "com.amazonaws.eu-west-1.sagemaker.api",
+    "SubnetIds": [
+     {
+      "Ref": "TrainingVpcPrivateSubnet1Subnet290288B7"
+     },
+     {
+      "Ref": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/SagemakerApiEndpoint/Resource"
+   }
+  },
+  "TrainingVpcSagemakerRuntimeEndpoint3B3AA865": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "TrainingVpcEndpointSGD3F72AF8",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "com.amazonaws.eu-west-1.sagemaker.runtime",
+    "SubnetIds": [
+     {
+      "Ref": "TrainingVpcPrivateSubnet1Subnet290288B7"
+     },
+     {
+      "Ref": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/SagemakerRuntimeEndpoint/Resource"
+   }
+  },
+  "TrainingVpcStsEndpoint19D28B11": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "TrainingVpcEndpointSGD3F72AF8",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "com.amazonaws.eu-west-1.sts",
+    "SubnetIds": [
+     {
+      "Ref": "TrainingVpcPrivateSubnet1Subnet290288B7"
+     },
+     {
+      "Ref": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/StsEndpoint/Resource"
+   }
+  },
+  "TrainingVpcEcrApiEndpoint5A81981E": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "TrainingVpcEndpointSGD3F72AF8",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "com.amazonaws.eu-west-1.ecr.api",
+    "SubnetIds": [
+     {
+      "Ref": "TrainingVpcPrivateSubnet1Subnet290288B7"
+     },
+     {
+      "Ref": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/EcrApiEndpoint/Resource"
+   }
+  },
+  "TrainingVpcEcrDkrEndpoint15E7809D": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "TrainingVpcEndpointSGD3F72AF8",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "com.amazonaws.eu-west-1.ecr.dkr",
+    "SubnetIds": [
+     {
+      "Ref": "TrainingVpcPrivateSubnet1Subnet290288B7"
+     },
+     {
+      "Ref": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/EcrDkrEndpoint/Resource"
+   }
+  },
+  "TrainingVpcLogsEndpoint0167781A": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "TrainingVpcEndpointSGD3F72AF8",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "com.amazonaws.eu-west-1.logs",
+    "SubnetIds": [
+     {
+      "Ref": "TrainingVpcPrivateSubnet1Subnet290288B7"
+     },
+     {
+      "Ref": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/LogsEndpoint/Resource"
+   }
+  },
+  "TrainingVpcSecretsmanagerEndpoint0969A176": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "TrainingVpcEndpointSGD3F72AF8",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "com.amazonaws.eu-west-1.secretsmanager",
+    "SubnetIds": [
+     {
+      "Ref": "TrainingVpcPrivateSubnet1Subnet290288B7"
+     },
+     {
+      "Ref": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/SecretsmanagerEndpoint/Resource"
+   }
+  },
+  "TrainingVpcSsmEndpoint472A284B": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "TrainingVpcEndpointSGD3F72AF8",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "com.amazonaws.eu-west-1.ssm",
+    "SubnetIds": [
+     {
+      "Ref": "TrainingVpcPrivateSubnet1Subnet290288B7"
+     },
+     {
+      "Ref": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/SsmEndpoint/Resource"
+   }
+  },
+  "TrainingVpcKmsEndpoint421554F3": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "TrainingVpcEndpointSGD3F72AF8",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "com.amazonaws.eu-west-1.kms",
+    "SubnetIds": [
+     {
+      "Ref": "TrainingVpcPrivateSubnet1Subnet290288B7"
+     },
+     {
+      "Ref": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/KmsEndpoint/Resource"
+   }
+  },
+  "TrainingVpcMonitoringEndpoint3C8AAAA4": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "TrainingVpcEndpointSGD3F72AF8",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "com.amazonaws.eu-west-1.monitoring",
+    "SubnetIds": [
+     {
+      "Ref": "TrainingVpcPrivateSubnet1Subnet290288B7"
+     },
+     {
+      "Ref": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/MonitoringEndpoint/Resource"
+   }
+  },
+  "TrainingVpcBedrockRuntimeEndpoint6ED3E7F1": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "TrainingVpcEndpointSGD3F72AF8",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": "com.amazonaws.eu-west-1.bedrock-runtime",
+    "SubnetIds": [
+     {
+      "Ref": "TrainingVpcPrivateSubnet1Subnet290288B7"
+     },
+     {
+      "Ref": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "TrainingVpcD9FD96E1"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/BedrockRuntimeEndpoint/Resource"
+   }
+  },
+  "TrainingVpcFlowLogGroup446444F8": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 7,
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "dev"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "cdk"
+     },
+     {
+      "Key": "Project",
+      "Value": "llm-finetune"
+     },
+     {
+      "Key": "Repository",
+      "Value": "llm-finetune-pipeline"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "dev-network/TrainingVpc/FlowLogGroup/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/32Q3W6DMAxGn6X3aTZoX6Cqugpp2hBMvZ1C6tK0EKPEGUKId1/439WufHzkxJ8c8nC/568bUdutvD63hcp4m5KQT+bVdwsy5O2lkux405f4yGKXFUqmLtNAvVspQUfwJbICVr+6g7UolSCFehnu4RTFffkQdBYEtWhYbNSPx/XjSBMYz/PAmGTqDuSz3kvQxCbjw570tUKlaRpd2rcC63fMez1jCtIZRc3ZoKuG4P+KSOcGrGVDppuQ8Gdbx5QoeZvgeIGhxuivNUQeqWMF5pa3fvWyYOauYwlYdEYO7z8dVc5/Gjd0R/2y40HAg93mYZXaGqdJlcCTsf4CAbBeR8UBAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "dev-network/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "VpcId": {
+   "Value": {
+    "Ref": "TrainingVpcD9FD96E1"
+   }
+  },
+  "PrivateSubnetIds": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Ref": "TrainingVpcPrivateSubnet1Subnet290288B7"
+      },
+      ",",
+      {
+       "Ref": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+      }
+     ]
+    ]
+   }
+  },
+  "TrainingSecurityGroupId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TrainingVpcTrainingSG9B5E9840",
+     "GroupId"
+    ]
+   }
+  },
+  "ExportsOutputRefTrainingVpcD9FD96E150CF70DA": {
+   "Value": {
+    "Ref": "TrainingVpcD9FD96E1"
+   },
+   "Export": {
+    "Name": "dev-network:ExportsOutputRefTrainingVpcD9FD96E150CF70DA"
+   }
+  },
+  "ExportsOutputFnGetAttTrainingVpcTrainingSG9B5E9840GroupId23F8CB27": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TrainingVpcTrainingSG9B5E9840",
+     "GroupId"
+    ]
+   },
+   "Export": {
+    "Name": "dev-network:ExportsOutputFnGetAttTrainingVpcTrainingSG9B5E9840GroupId23F8CB27"
+   }
+  },
+  "ExportsOutputRefTrainingVpcPrivateSubnet1Subnet290288B70E1137F2": {
+   "Value": {
+    "Ref": "TrainingVpcPrivateSubnet1Subnet290288B7"
+   },
+   "Export": {
+    "Name": "dev-network:ExportsOutputRefTrainingVpcPrivateSubnet1Subnet290288B70E1137F2"
+   }
+  },
+  "ExportsOutputRefTrainingVpcPrivateSubnet2Subnet00DAE6EE5E27CF94": {
+   "Value": {
+    "Ref": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+   },
+   "Export": {
+    "Name": "dev-network:ExportsOutputRefTrainingVpcPrivateSubnet2Subnet00DAE6EE5E27CF94"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

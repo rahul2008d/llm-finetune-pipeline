@@ -1,0 +1,373 @@
+{
+  "/dev-network": [
+    {
+      "type": "aws:cdk:stack-tags",
+      "data": [
+        {
+          "key": "Environment",
+          "value": "dev"
+        },
+        {
+          "key": "ManagedBy",
+          "value": "cdk"
+        },
+        {
+          "key": "Project",
+          "value": "llm-finetune"
+        },
+        {
+          "key": "Repository",
+          "value": "llm-finetune-pipeline"
+        }
+      ]
+    }
+  ],
+  "/dev-network/VpcId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcId"
+    }
+  ],
+  "/dev-network/PrivateSubnetIds": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateSubnetIds"
+    }
+  ],
+  "/dev-network/TrainingSecurityGroupId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingSecurityGroupId"
+    }
+  ],
+  "/dev-network/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/dev-network/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/dev-network/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    }
+  ],
+  "/dev-network/Exports/Output{\"Ref\":\"TrainingVpcD9FD96E1\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefTrainingVpcD9FD96E150CF70DA"
+    }
+  ],
+  "/dev-network/Exports/Output{\"Fn::GetAtt\":[\"TrainingVpcTrainingSG9B5E9840\",\"GroupId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttTrainingVpcTrainingSG9B5E9840GroupId23F8CB27"
+    }
+  ],
+  "/dev-network/Exports/Output{\"Ref\":\"TrainingVpcPrivateSubnet1Subnet290288B7\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefTrainingVpcPrivateSubnet1Subnet290288B70E1137F2"
+    }
+  ],
+  "/dev-network/Exports/Output{\"Ref\":\"TrainingVpcPrivateSubnet2Subnet00DAE6EE\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefTrainingVpcPrivateSubnet2Subnet00DAE6EE5E27CF94"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcD9FD96E1"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcIGW18682773"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcVPCGW2DF96D97"
+    }
+  ],
+  "/dev-network/TrainingVpc/TrainingSG/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcTrainingSG9B5E9840"
+    }
+  ],
+  "/dev-network/TrainingVpc/TrainingSG/from devnetworkTrainingVpcTrainingSG897601E5:ALL TRAFFIC": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcTrainingSGfromdevnetworkTrainingVpcTrainingSG897601E5ALLTRAFFIC9A5BBBEA"
+    }
+  ],
+  "/dev-network/TrainingVpc/EndpointSG/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcEndpointSGD3F72AF8"
+    }
+  ],
+  "/dev-network/TrainingVpc/EndpointSG/from devnetworkTrainingVpcTrainingSG897601E5:443": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcEndpointSGfromdevnetworkTrainingVpcTrainingSG897601E544390711286"
+    }
+  ],
+  "/dev-network/TrainingVpc/SageMakerEndpointSG/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcSageMakerEndpointSG3543D2FF"
+    }
+  ],
+  "/dev-network/TrainingVpc/SagemakerApiEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcSagemakerApiEndpointC78125B0"
+    }
+  ],
+  "/dev-network/TrainingVpc/SagemakerRuntimeEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcSagemakerRuntimeEndpoint3B3AA865"
+    }
+  ],
+  "/dev-network/TrainingVpc/StsEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcStsEndpoint19D28B11"
+    }
+  ],
+  "/dev-network/TrainingVpc/EcrApiEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcEcrApiEndpoint5A81981E"
+    }
+  ],
+  "/dev-network/TrainingVpc/EcrDkrEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcEcrDkrEndpoint15E7809D"
+    }
+  ],
+  "/dev-network/TrainingVpc/LogsEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcLogsEndpoint0167781A"
+    }
+  ],
+  "/dev-network/TrainingVpc/SecretsmanagerEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcSecretsmanagerEndpoint0969A176"
+    }
+  ],
+  "/dev-network/TrainingVpc/SsmEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcSsmEndpoint472A284B"
+    }
+  ],
+  "/dev-network/TrainingVpc/KmsEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcKmsEndpoint421554F3"
+    }
+  ],
+  "/dev-network/TrainingVpc/MonitoringEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcMonitoringEndpoint3C8AAAA4"
+    }
+  ],
+  "/dev-network/TrainingVpc/BedrockRuntimeEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcBedrockRuntimeEndpoint6ED3E7F1"
+    }
+  ],
+  "/dev-network/TrainingVpc/FlowLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcFlowLogGroup446444F8"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPublicSubnet1Subnet2E1DA12D"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPublicSubnet1RouteTableA3528D8E"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPublicSubnet1RouteTableAssociationF23AEDE9"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPublicSubnet1DefaultRoute890EEBCE"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPublicSubnet1EIP07EE6C52"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPublicSubnet1NATGateway106E3099"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPublicSubnet2Subnet869F26C0"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPublicSubnet2RouteTable3B651E79"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPublicSubnet2RouteTableAssociation914BCE1E"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPublicSubnet2DefaultRoute46904177"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPrivateSubnet1Subnet290288B7"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPrivateSubnet1RouteTable9797C1C1"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPrivateSubnet1RouteTableAssociation7C4E95B1"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPrivateSubnet1DefaultRoute341B4082"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPrivateSubnet2Subnet00DAE6EE"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPrivateSubnet2RouteTableF2F1DEFA"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPrivateSubnet2RouteTableAssociation7DBE4EC4"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcPrivateSubnet2DefaultRoute8A0B1744"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/IsolatedSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcIsolatedSubnet1Subnet90A12B68"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/IsolatedSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcIsolatedSubnet1RouteTableBA7EE9C3"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/IsolatedSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcIsolatedSubnet1RouteTableAssociation147FE4BA"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/IsolatedSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcIsolatedSubnet2Subnet5DA32EE6"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/IsolatedSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcIsolatedSubnet2RouteTableD386A3F7"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/IsolatedSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcIsolatedSubnet2RouteTableAssociation46A519D5"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/S3Gateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcS3Gateway740E8011"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/FlowLog/FlowLog": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcFlowLog8ABF05C8"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/FlowLog/IAMRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcFlowLogIAMRole3E0B0E7B"
+    }
+  ],
+  "/dev-network/TrainingVpc/Vpc/FlowLog/IAMRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingVpcFlowLogIAMRoleDefaultPolicy9EE64770"
+    }
+  ]
+}

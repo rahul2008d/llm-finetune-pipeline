@@ -1,0 +1,199 @@
+{
+  "/dev-sagemaker": [
+    {
+      "type": "aws:cdk:stack-tags",
+      "data": [
+        {
+          "key": "Environment",
+          "value": "dev"
+        },
+        {
+          "key": "ManagedBy",
+          "value": "cdk"
+        },
+        {
+          "key": "Project",
+          "value": "llm-finetune"
+        },
+        {
+          "key": "Repository",
+          "value": "llm-finetune-pipeline"
+        }
+      ]
+    }
+  ],
+  "/dev-sagemaker/Domain": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Domain"
+    }
+  ],
+  "/dev-sagemaker/MonthlyBudget": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MonthlyBudget"
+    }
+  ],
+  "/dev-sagemaker/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/dev-sagemaker/DomainId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DomainId"
+    }
+  ],
+  "/dev-sagemaker/SNSTopicArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SNSTopicArn"
+    }
+  ],
+  "/dev-sagemaker/DashboardUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DashboardUrl"
+    }
+  ],
+  "/dev-sagemaker/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/dev-sagemaker/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/dev-sagemaker/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/dev-sagemaker/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/dev-sagemaker/TrailLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrailLogGroup7A1F916A"
+    }
+  ],
+  "/dev-sagemaker/ApiTrail/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiTrail86C05344"
+    }
+  ],
+  "/dev-sagemaker/TrainingJobStateChange/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingJobStateChange7A882E4A"
+    }
+  ],
+  "/dev-sagemaker/EndpointStatusChange/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointStatusChangeF5AF726A"
+    }
+  ],
+  "/dev-sagemaker/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    }
+  ],
+  "/dev-sagemaker/Monitoring/AlertTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MonitoringAlertTopicB48B06C2"
+    }
+  ],
+  "/dev-sagemaker/Monitoring/TrainingJobFailure/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MonitoringTrainingJobFailureEC8E3B0C"
+    }
+  ],
+  "/dev-sagemaker/Monitoring/Endpoint5xxRate/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MonitoringEndpoint5xxRate889C78F6"
+    }
+  ],
+  "/dev-sagemaker/Monitoring/EndpointLatencyP99/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MonitoringEndpointLatencyP99CE50FCAE"
+    }
+  ],
+  "/dev-sagemaker/Monitoring/Dashboard/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MonitoringDashboard0C3675C6"
+    }
+  ],
+  "/dev-sagemaker/CloudTrailBucket/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudTrailBucket6E6EF1BF"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/dev-sagemaker/ApiTrail/LogsRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiTrailLogsRoleC266668E"
+    }
+  ],
+  "/dev-sagemaker/Monitoring/AlertTopic/rahuldatta.aws@gmail.com/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MonitoringAlertTopicrahuldattaawsgmailcomBF0F7B77"
+    }
+  ],
+  "/dev-sagemaker/Monitoring/AlertTopic/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MonitoringAlertTopicPolicyE767CC17"
+    }
+  ],
+  "/dev-sagemaker/CloudTrailBucket/Bucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudTrailBucketPolicyDD50BC42"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/dev-sagemaker/CloudTrailBucket/Bucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudTrailBucketAutoDeleteObjectsCustomResource55C0FCCA"
+    }
+  ],
+  "/dev-sagemaker/ApiTrail/LogsRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiTrailLogsRoleDefaultPolicyA05C4F57"
+    }
+  ]
+}

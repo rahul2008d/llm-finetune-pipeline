@@ -1,0 +1,241 @@
+{
+  "/dev-storage": [
+    {
+      "type": "aws:cdk:stack-tags",
+      "data": [
+        {
+          "key": "Environment",
+          "value": "dev"
+        },
+        {
+          "key": "ManagedBy",
+          "value": "cdk"
+        },
+        {
+          "key": "Project",
+          "value": "llm-finetune"
+        },
+        {
+          "key": "Repository",
+          "value": "llm-finetune-pipeline"
+        }
+      ]
+    }
+  ],
+  "/dev-storage/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/dev-storage/KmsKeyArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KmsKeyArn"
+    }
+  ],
+  "/dev-storage/TrainingDataBucket": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingDataBucket"
+    }
+  ],
+  "/dev-storage/ModelArtifactsBucket": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ModelArtifactsBucket"
+    }
+  ],
+  "/dev-storage/TrainingEcrUri": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingEcrUri"
+    }
+  ],
+  "/dev-storage/ServingEcrUri": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServingEcrUri"
+    }
+  ],
+  "/dev-storage/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/dev-storage/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/dev-storage/SageMakerKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SageMakerKey0E10941A"
+    }
+  ],
+  "/dev-storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/dev-storage/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/dev-storage/TrainingRepo/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingRepo66C57C98"
+    }
+  ],
+  "/dev-storage/ServingRepo/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServingRepoAB800127"
+    }
+  ],
+  "/dev-storage/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    }
+  ],
+  "/dev-storage/Exports/Output{\"Fn::GetAtt\":[\"TrainingDataBucketFD9236C9\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttTrainingDataBucketFD9236C9ArnD48C3785"
+    }
+  ],
+  "/dev-storage/Exports/Output{\"Fn::GetAtt\":[\"ModelArtifactsBucket2C3831B7\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttModelArtifactsBucket2C3831B7Arn5D5B3740"
+    }
+  ],
+  "/dev-storage/Exports/Output{\"Fn::GetAtt\":[\"MLflowBucket04EEF01D\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttMLflowBucket04EEF01DArn6943053D"
+    }
+  ],
+  "/dev-storage/Exports/Output{\"Fn::GetAtt\":[\"SageMakerKey0E10941A\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttSageMakerKey0E10941AArn0EA61C6A"
+    }
+  ],
+  "/dev-storage/Exports/Output{\"Fn::GetAtt\":[\"TrainingRepo66C57C98\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttTrainingRepo66C57C98Arn55F4867B"
+    }
+  ],
+  "/dev-storage/Exports/Output{\"Fn::GetAtt\":[\"ServingRepoAB800127\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttServingRepoAB800127Arn63BEBC9F"
+    }
+  ],
+  "/dev-storage/SageMakerKey/Alias/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SageMakerKeyAlias04E11131"
+    }
+  ],
+  "/dev-storage/TrainingData/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingDataBucketFD9236C9"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/dev-storage/ModelArtifacts/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ModelArtifactsBucket2C3831B7"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/dev-storage/MLflow/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MLflowBucket04EEF01D"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/dev-storage/TrainingData/Bucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingDataBucketPolicyDB62C88D"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/dev-storage/TrainingData/Bucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingDataBucketAutoDeleteObjectsCustomResource1C54671E"
+    }
+  ],
+  "/dev-storage/ModelArtifacts/Bucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ModelArtifactsBucketPolicy678B8225"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/dev-storage/ModelArtifacts/Bucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ModelArtifactsBucketAutoDeleteObjectsCustomResource5EC0D92E"
+    }
+  ],
+  "/dev-storage/MLflow/Bucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MLflowBucketPolicy855A6C43"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/dev-storage/MLflow/Bucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MLflowBucketAutoDeleteObjectsCustomResource30AF6AB3"
+    }
+  ]
+}
