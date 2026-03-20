@@ -79,12 +79,12 @@ class SageMakerTrainingLauncher:
 
         estimator = HuggingFace(
             entry_point="train_entry.py",
-            source_dir="src/",
+            source_dir="src/training/",
             instance_type=config.sagemaker.instance_type,
             instance_count=config.sagemaker.instance_count,
             role=config.sagemaker.role_arn,
-            transformers_version="4.44.0",
-            pytorch_version="2.2.0",
+            transformers_version="4.36.0",
+            pytorch_version="2.1.0",
             py_version="py310",
             volume_size=config.sagemaker.volume_size_gb,
             max_run=config.sagemaker.max_run_seconds,
@@ -225,12 +225,12 @@ class SageMakerTrainingLauncher:
 
         estimator = HuggingFace(
             entry_point="train_entry.py",
-            source_dir="src/",
+            source_dir="src/training/",
             instance_type=config.sagemaker.instance_type,
             instance_count=config.sagemaker.instance_count,
             role=config.sagemaker.role_arn,
-            transformers_version="4.44.0",
-            pytorch_version="2.2.0",
+            transformers_version="4.36.0",
+            pytorch_version="2.1.0",
             py_version="py310",
             volume_size=config.sagemaker.volume_size_gb,
             max_run=config.sagemaker.max_run_seconds,
@@ -317,6 +317,8 @@ class SageMakerTrainingLauncher:
             Key=s3_key,
             Body=config_yaml.encode("utf-8"),
             ContentType="application/x-yaml",
+            ServerSideEncryption="aws:kms",
+            SSEKMSKeyId="arn:aws:kms:eu-west-1:162811752071:key/ef340093-c43a-4187-b062-6803dcf99a07",
         )
         uri = f"s3://{bucket}/{s3_key}"
         logger.info("Uploaded config to S3", uri=uri)

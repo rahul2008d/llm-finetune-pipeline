@@ -1,0 +1,67 @@
+experiment_name: "sagemaker-test"
+
+model:
+  model_name_or_path: "meta-llama/Meta-Llama-3.1-8B-Instruct"
+  trust_remote_code: false
+  torch_dtype: "bfloat16"
+  attn_implementation: "flash_attention_2"
+  max_seq_length: 512
+  use_cache: false
+
+quantization:
+  method: "qlora"
+  load_in_4bit: true
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_compute_dtype: "bfloat16"
+  bnb_4bit_use_double_quant: true
+
+lora:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  use_dora: false
+  use_rslora: false
+
+training:
+  num_train_epochs: 1
+  per_device_train_batch_size: 2
+  per_device_eval_batch_size: 2
+  gradient_accumulation_steps: 4
+  learning_rate: 0.0002
+  weight_decay: 0.01
+  warmup_ratio: 0.03
+  lr_scheduler_type: "cosine"
+  max_grad_norm: 1.0
+  optim: "paged_adamw_8bit"
+  bf16: true
+  fp16: false
+  gradient_checkpointing: true
+  logging_steps: 5
+  eval_strategy: "no"
+  eval_steps: 100
+  save_strategy: "no"
+  save_steps: 200
+  save_total_limit: 0
+  load_best_model_at_end: false
+  seed: 42
+  data_seed: 42
+  dataloader_num_workers: 2
+  dataloader_pin_memory: true
+  group_by_length: false
+  report_to: []
+  no_cuda: false
+
+sagemaker:
+  instance_type: "ml.g5.2xlarge"
+  instance_count: 1
+  volume_size_gb: 100
+  max_run_seconds: 3600
+  use_spot_instances: false
+  role_arn: "arn:aws:iam::162811752071:role/llm-finetune-dev-sagemaker-training"
+
+dataset_path: "s3://llm-finetune-dev-training-data/datasets/smoke_test/"
+output_s3_uri: "s3://llm-finetune-dev-model-artifacts/training-outputs/"
+output_local_path: ""

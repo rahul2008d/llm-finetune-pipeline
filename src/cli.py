@@ -363,68 +363,47 @@ def train_local(
 @train_app.command("sagemaker")
 def train_sagemaker(
     config: Path = typer.Option(..., "--config", help="Path to training YAML config."),
-    instance: Optional[str] = typer.Option(None, "--instance", help="Override SageMaker instance type."),
     yes: bool = typer.Option(False, "--yes", "-y", help="Skip confirmation prompt."),
 ) -> None:
     """Launch fine-tuning on SageMaker."""
     configure_logging(json_output=False)
 
-    cfg = _load_config(config, {"instance": instance}, TrainSageMakerConfig)
-    assert isinstance(cfg, TrainSageMakerConfig)
+    cfg = _load_config(config, {}, TrainingJobConfig)
+    assert isinstance(cfg, TrainingJobConfig)
 
+    if cfg.sagemaker is None:
+        console.print("[red]Error: sagemaker section missing from config.[/red]")
+        raise SystemExit(EXIT_VALIDATION)
+
+    sm = cfg.sagemaker
     summary = (
         f"[bold]Train on SageMaker[/bold]\n"
-        f"  model          : {cfg.model_id}\n"
-        f"  dataset        : {cfg.dataset}\n"
-        f"  instance       : {cfg.instance} × {cfg.instance_count}\n"
-        f"  volume         : {cfg.volume_size_gb} GB\n"
-        f"  epochs         : {cfg.epochs}\n"
-        f"  batch_size     : {cfg.batch_size}\n"
-        f"  lr             : {cfg.learning_rate}\n"
-        f"  LoRA r/α       : {cfg.lora_rank}/{cfg.lora_alpha}\n"
-        f"  QLoRA          : {cfg.use_qlora}  DoRA: {cfg.use_dora}"
+        f"  model       : {cfg.model.model_name_or_path}\n"
+        f"  dataset     : {cfg.dataset_path or cfg.dataset_id}\n"
+        f"  instance    : {sm.instance_type} x {sm.instance_count}\n"
+        f"  epochs      : {cfg.training.num_train_epochs}\n"
+        f"  QLoRA 4-bit : {cfg.quantization.load_in_4bit}\n"
+        f"  DoRA        : {cfg.lora.use_dora}\n"
+        f"  output      : {cfg.output_s3_uri}"
     )
     _confirm(summary, yes)
 
     def _run() -> None:
-        import sagemaker
-        from sagemaker.huggingface import HuggingFace
+        from src.training.sagemaker_launcher import SageMakerTrainingLauncher
 
         logger = get_logger("cli.train.sagemaker")
-        logger.info("Launching SageMaker training job", instance=cfg.instance)
+        logger.info("Submitting SageMaker training job", experiment=cfg.experiment_name)
 
-        sess = sagemaker.Session()
-        role = cfg.role_arn or sagemaker.get_execution_role()
+        launcher = SageMakerTrainingLauncher()
+        job_name = launcher.launch(cfg)
 
-        hyperparameters = {
-            "model_id": cfg.model_id,
-            "dataset": cfg.dataset,
-            "epochs": cfg.epochs,
-            "batch_size": cfg.batch_size,
-            "learning_rate": cfg.learning_rate,
-            "lora_rank": cfg.lora_rank,
-            "lora_alpha": cfg.lora_alpha,
-            "use_qlora": cfg.use_qlora,
-            "use_dora": cfg.use_dora,
-        }
+        logger.info("SageMaker job submitted", job_name=job_name)
+        console.print(f"[yellow]Job submitted: {job_name}[/yellow]")
+        console.print("[yellow]Waiting for completion...[/yellow]")
 
-        estimator = HuggingFace(
-            entry_point="train.py",
-            source_dir="src",
-            role=role,
-            instance_type=cfg.instance,
-            instance_count=cfg.instance_count,
-            volume_size=cfg.volume_size_gb,
-            transformers_version="4.44",
-            pytorch_version="2.3",
-            py_version="py310",
-            hyperparameters=hyperparameters,
-            sagemaker_session=sess,
-        )
-        estimator.fit(wait=True)
-
-        logger.info("SageMaker training complete", job_name=estimator.latest_training_job.name)
-        console.print(f"[green]SageMaker job complete: {estimator.latest_training_job.name}[/green]")
+        result = launcher.wait_for_job(job_name)
+        logger.info("Training complete", result=str(result))
+        console.print(f"[green]Training complete. Job: {job_name}[/green]")
 
     _run_command(_run)
 
