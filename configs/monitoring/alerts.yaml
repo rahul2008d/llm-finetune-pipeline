@@ -1,0 +1,17 @@
+# Alert configuration
+channels:
+  dev:
+    sns_topic_arn: "${ssm:/llm-finetune/alerts-dev-topic-arn}"
+  staging:
+    sns_topic_arn: "${ssm:/llm-finetune/alerts-staging-topic-arn}"
+  prod:
+    sns_topic_arn: "${ssm:/llm-finetune/alerts-prod-topic-arn}"
+
+thresholds:
+  latency_p99_ms: 5000
+  error_rate_pct: 1.0
+  cost_warning_pct: 80
+  cost_critical_pct: 100
+  drift_sensitivity: 0.05
+
+dedup_window_minutes: 5

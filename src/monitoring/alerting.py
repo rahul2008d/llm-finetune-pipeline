@@ -1,5 +1,7 @@
 """Alerting system for sending notifications via SNS."""
 
+from __future__ import annotations
+
 from typing import Any
 
 import structlog
@@ -112,6 +114,72 @@ class AlertManager:
             default=str,
         )
         return self.send_alert(subject, message, severity="WARNING")
+
+    def send_deployment_event(
+        self,
+        event_type: str,
+        endpoint_name: str,
+        details: dict[str, Any] | None = None,
+    ) -> str:
+        """Send deployment lifecycle notification.
+
+        Args:
+            event_type: Event type (started, canary, complete, rollback).
+            endpoint_name: Name of the endpoint being deployed.
+            details: Optional additional event details.
+
+        Returns:
+            SNS message ID.
+        """
+        import json
+
+        severity_map = {
+            "started": "INFO",
+            "canary": "INFO",
+            "complete": "INFO",
+            "rollback": "CRITICAL",
+        }
+        severity = severity_map.get(event_type, "WARNING")
+        subject = f"Deployment {event_type}: {endpoint_name}"
+        payload: dict[str, Any] = {
+            "event_type": event_type,
+            "endpoint_name": endpoint_name,
+        }
+        if details:
+            payload["details"] = details
+        message = json.dumps(payload, indent=2, default=str)
+        return self.send_alert(subject, message, severity=severity)
+
+    def send_cost_alert(
+        self,
+        current_cost: float,
+        budget_limit: float,
+        details: dict[str, Any] | None = None,
+    ) -> str:
+        """Send cost threshold alert.
+
+        Args:
+            current_cost: Current accumulated cost in USD.
+            budget_limit: Budget limit in USD.
+            details: Optional additional cost details.
+
+        Returns:
+            SNS message ID.
+        """
+        import json
+
+        pct = (current_cost / budget_limit * 100) if budget_limit > 0 else 0.0
+        severity = "CRITICAL" if pct >= 100 else "WARNING"
+        subject = f"Cost Alert: {pct:.0f}% of budget (${current_cost:.2f}/${budget_limit:.2f})"
+        payload: dict[str, Any] = {
+            "current_cost_usd": current_cost,
+            "budget_limit_usd": budget_limit,
+            "utilization_pct": round(pct, 2),
+        }
+        if details:
+            payload["details"] = details
+        message = json.dumps(payload, indent=2, default=str)
+        return self.send_alert(subject, message, severity=severity)
 
 
 __all__: list[str] = ["AlertManager"]

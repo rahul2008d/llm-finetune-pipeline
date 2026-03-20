@@ -1,0 +1,50 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker/**"
+      - "src/**"
+      - "requirements*.txt"
+      - "pyproject.toml"
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [train, serve]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile.${{ matrix.target }}
+          push: true
+          tags: |
+            ${{ steps.ecr-login.outputs.registry }}/llm-finetune-${{ matrix.target }}:${{ github.sha }}
+            ${{ steps.ecr-login.outputs.registry }}/llm-finetune-${{ matrix.target }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64

@@ -1,0 +1,131 @@
+name: Training Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      config_file:
+        description: "Training config path"
+        required: true
+        default: "configs/training/qlora_llama3_8b.yaml"
+      dataset_path:
+        description: "S3 URI or local path to dataset"
+        required: true
+      run_evaluation:
+        description: "Run eval after training"
+        type: boolean
+        default: true
+      deploy_to:
+        description: "Deploy target"
+        type: choice
+        options:
+          - none
+          - dev
+          - staging
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --extra dev
+      - name: Validate config
+        run: |
+          uv run python -c "
+          from src.config.training import TrainingJobConfig
+          import yaml
+          with open('${{ inputs.config_file }}') as f:
+              cfg = yaml.safe_load(f)
+          TrainingJobConfig.model_validate(cfg)
+          print('Config validation passed')
+          "
+      - name: Estimate cost
+        run: |
+          echo "Estimated cost: check config for instance type and epochs"
+          echo "Config: ${{ inputs.config_file }}"
+
+  train:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - name: Submit SageMaker training job
+        run: |
+          uv run llm-ft train sagemaker \
+            --config ${{ inputs.config_file }} \
+            --yes
+        timeout-minutes: 1440  # 24 hours
+
+  evaluate:
+    needs: train
+    if: ${{ inputs.run_evaluation }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --extra eval
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - name: Run evaluation
+        run: |
+          uv run llm-ft evaluate \
+            --model-path ${{ needs.train.outputs.model_path || 's3://placeholder' }} \
+            --benchmark mmlu,hellaswag,arc_challenge \
+            --output-dir ./results/ \
+            --yes
+
+  deploy:
+    needs: evaluate
+    if: ${{ inputs.deploy_to != 'none' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - name: Deploy
+        run: |
+          uv run llm-ft deploy sagemaker \
+            --model ${{ needs.train.outputs.model_s3_uri || 's3://placeholder' }} \
+            --endpoint-name llm-ft-${{ inputs.deploy_to }}-v1 \
+            --instance ml.g5.xlarge \
+            --yes
+      - name: Smoke test
+        run: |
+          uv run python -c "
+          from src.serving.endpoint_tester import EndpointTester
+          tester = EndpointTester()
+          result = tester.smoke_test('llm-ft-${{ inputs.deploy_to }}-v1')
+          assert result['passed'], f'Smoke test failed: {result}'
+          print('Smoke test passed')
+          "

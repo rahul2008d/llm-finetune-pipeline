@@ -3,6 +3,7 @@
 from src.monitoring.alerting import AlertManager
 from src.monitoring.cloudwatch import CloudWatchMetrics, TrainingMetricsPublisher
 from src.monitoring.drift import DriftDetector
+from src.monitoring.endpoint_monitor import EndpointMonitor
 from src.monitoring.mlflow_tracker import ExperimentTracker
 from src.monitoring.model_card import ModelCardGenerator
 
@@ -11,6 +12,7 @@ __all__: list[str] = [
     "TrainingMetricsPublisher",
     "DriftDetector",
     "AlertManager",
+    "EndpointMonitor",
     "ExperimentTracker",
     "ModelCardGenerator",
 ]

@@ -1,0 +1,134 @@
+name: Production Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      model_s3_uri:
+        description: "S3 URI of approved model artifacts"
+        required: true
+      deploy_target:
+        type: choice
+        options:
+          - sagemaker
+          - bedrock
+          - both
+      skip_bake:
+        type: boolean
+        default: false
+        description: "Skip bake time (emergency only)"
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  pre-deploy-checks:
+    runs-on: ubuntu-latest
+    environment: production  # requires manual approval
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - name: Verify model artifacts
+        run: |
+          uv run python -c "
+          from src.serving.artifact_packager import ArtifactPackager
+          packager = ArtifactPackager()
+          result = packager.verify_artifact('${{ inputs.model_s3_uri }}', 'sagemaker')
+          assert result['is_valid'], f'Artifact verification failed: {result[\"issues\"]}'
+          print(f'Model verified: {result[\"size_gb\"]}GB')
+          "
+
+  deploy-sagemaker:
+    needs: pre-deploy-checks
+    if: contains(fromJSON('["sagemaker", "both"]'), inputs.deploy_target)
+    environment: production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - name: Blue-green deploy
+        run: |
+          uv run python -c "
+          from src.serving.endpoint import SageMakerEndpointManager
+          mgr = SageMakerEndpointManager()
+          result = mgr.blue_green_deploy(
+              endpoint_name='llm-ft-prod-v1',
+              new_model_data_url='${{ inputs.model_s3_uri }}',
+              canary_pct=0.1,
+              bake_time_minutes=${{ inputs.skip_bake && 0 || 30 }},
+              rollback_alarm_names=['llm-finetune-prod-endpoint-5xx-rate'],
+          )
+          print(f'Deployment result: {result}')
+          assert result.get('status') != 'rolled_back', 'Deployment rolled back!'
+          "
+      - name: Smoke test production
+        run: |
+          uv run python -c "
+          from src.serving.endpoint_tester import EndpointTester
+          tester = EndpointTester()
+          result = tester.smoke_test('llm-ft-prod-v1')
+          assert result['passed'], f'Production smoke test failed: {result}'
+          "
+
+  deploy-bedrock:
+    needs: pre-deploy-checks
+    if: contains(fromJSON('["bedrock", "both"]'), inputs.deploy_target)
+    environment: production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      - name: Import to Bedrock
+        run: |
+          uv run python -c "
+          from src.serving.bedrock import BedrockImportManager
+          mgr = BedrockImportManager()
+          result = mgr.import_model(
+              model_name='llm-ft-prod',
+              model_s3_uri='${{ inputs.model_s3_uri }}',
+              role_arn='arn:aws:iam::role/bedrock-import',
+          )
+          print(f'Import result: {result}')
+          "
+
+  post-deploy:
+    needs: [deploy-sagemaker, deploy-bedrock]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag release
+        run: |
+          git tag "deployed/prod/$(date +%Y%m%d-%H%M%S)"
+          git push --tags

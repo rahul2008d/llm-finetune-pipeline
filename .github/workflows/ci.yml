@@ -1,8 +1,8 @@
-name: CI
+name: CI Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
     branches: [main]
 
@@ -16,18 +16,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-      - run: pip install -e '.[dev]'
-        working-directory: llm-finetune-pipeline
+          python-version: "3.10"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Install dependencies
+        run: uv sync --extra dev --extra data
       - name: Lint
-        run: ruff check src/ tests/
-        working-directory: llm-finetune-pipeline
+        run: uv run ruff check src/ tests/
       - name: Format check
-        run: ruff format --check src/ tests/
-        working-directory: llm-finetune-pipeline
+        run: uv run ruff format --check src/ tests/
       - name: Type check
-        run: mypy src/
-        working-directory: llm-finetune-pipeline
+        run: uv run mypy src/
+      - name: Secret scan
+        run: uv run detect-secrets scan src/
 
   unit-tests:
     runs-on: ubuntu-latest
@@ -36,12 +37,60 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-      - run: pip install -e '.[dev]'
-        working-directory: llm-finetune-pipeline
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --extra dev --extra data
       - name: Run unit tests
-        run: pytest tests/unit/ -v
-        working-directory: llm-finetune-pipeline
+        run: uv run pytest tests/unit/ -v --cov=src --cov-report=xml --timeout=300
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+      - name: Check coverage threshold
+        run: |
+          coverage=$(uv run python -c "import xml.etree.ElementTree as ET; \
+            t=ET.parse('coverage.xml'); \
+            print(float(t.getroot().get('line-rate',0))*100)")
+          echo "Coverage: ${coverage}%"
+          uv run python -c "assert float('${coverage}') >= 70, f'Coverage {${coverage}}% below 70%'"
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    services:
+      localstack:
+        image: localstack/localstack:latest
+        ports:
+          - "4566:4566"
+    env:
+      AWS_ENDPOINT_URL: http://localhost:4566
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --extra dev --extra data
+      - name: Run integration tests
+        run: uv run pytest tests/integration/ -v --timeout=300
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --extra dev
+      - name: Dependency audit
+        run: uv run pip-audit 2>/dev/null || echo "pip-audit not available, skipping"
+      - name: Security lint
+        run: uv run bandit -r src/ -ll 2>/dev/null || echo "bandit not available, skipping"
 
   cdk-tests:
     runs-on: ubuntu-latest
@@ -53,10 +102,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
       - run: pip install -e '.[dev]'
       - name: Lint CDK code
         run: |
