@@ -92,7 +92,7 @@ class TestCostTrackingCallback:
         cb.on_train_begin(_make_args(), _make_state(), _make_control())
         assert cb._start_time is not None
 
-    @patch("training.callbacks.time.monotonic")
+    @patch("src.training.callbacks.time.monotonic")
     def test_cost_computed_correctly(self, mock_time: MagicMock) -> None:
         mock_time.return_value = 0.0
         cb = CostTrackingCallback(instance_type="ml.g5.2xlarge", instance_count=2)
@@ -104,7 +104,7 @@ class TestCostTrackingCallback:
         # 1 hour * 1.212/hr * 2 instances = 2.424
         assert cost == pytest.approx(2.424, abs=0.001)
 
-    @patch("training.callbacks.time.monotonic")
+    @patch("src.training.callbacks.time.monotonic")
     def test_on_log_updates_cost(self, mock_time: MagicMock) -> None:
         mock_time.return_value = 0.0
         cb = CostTrackingCallback(instance_type="ml.g5.2xlarge")
@@ -114,7 +114,7 @@ class TestCostTrackingCallback:
         cb.on_log(_make_args(), _make_state(), _make_control())
         assert cb._estimated_cost > 0.0
 
-    @patch("training.callbacks.time.monotonic")
+    @patch("src.training.callbacks.time.monotonic")
     def test_budget_exceeded_stops_training(self, mock_time: MagicMock) -> None:
         mock_time.return_value = 0.0
         cb = CostTrackingCallback(
@@ -130,7 +130,7 @@ class TestCostTrackingCallback:
         cb.on_log(_make_args(), _make_state(), control)
         assert control.should_training_stop is True
 
-    @patch("training.callbacks.time.monotonic")
+    @patch("src.training.callbacks.time.monotonic")
     def test_under_budget_does_not_stop(self, mock_time: MagicMock) -> None:
         mock_time.return_value = 0.0
         cb = CostTrackingCallback(
@@ -144,7 +144,7 @@ class TestCostTrackingCallback:
         cb.on_log(_make_args(), _make_state(), control)
         assert control.should_training_stop is False
 
-    @patch("training.callbacks.time.monotonic")
+    @patch("src.training.callbacks.time.monotonic")
     def test_no_budget_limit_never_stops(self, mock_time: MagicMock) -> None:
         mock_time.return_value = 0.0
         cb = CostTrackingCallback(instance_type="ml.g5.2xlarge")
@@ -155,7 +155,7 @@ class TestCostTrackingCallback:
         cb.on_log(_make_args(), _make_state(), control)
         assert control.should_training_stop is False
 
-    @patch("training.callbacks.time.monotonic")
+    @patch("src.training.callbacks.time.monotonic")
     def test_on_train_end_logs_final_cost(self, mock_time: MagicMock) -> None:
         mock_time.return_value = 0.0
         cb = CostTrackingCallback(instance_type="ml.g5.2xlarge")
@@ -180,8 +180,8 @@ class TestCostTrackingCallback:
 
 
 class TestMemoryMonitorCallback:
-    @patch("training.callbacks.torch")
-    @patch("training.callbacks.psutil.Process")
+    @patch("src.training.callbacks.torch")
+    @patch("src.training.callbacks.psutil.Process")
     def test_on_log_logs_cpu_memory(
         self, mock_proc_cls: MagicMock, mock_torch: MagicMock,
     ) -> None:
@@ -193,8 +193,8 @@ class TestMemoryMonitorCallback:
         cb = MemoryMonitorCallback()
         cb.on_log(_make_args(), _make_state(), _make_control())
 
-    @patch("training.callbacks.torch")
-    @patch("training.callbacks.psutil.Process")
+    @patch("src.training.callbacks.torch")
+    @patch("src.training.callbacks.psutil.Process")
     def test_on_log_logs_gpu_memory(
         self, mock_proc_cls: MagicMock, mock_torch: MagicMock,
     ) -> None:
@@ -215,8 +215,8 @@ class TestMemoryMonitorCallback:
         assert cb._peak_gpu_allocated == 5 * 1024**3
         assert cb._peak_gpu_reserved == 6 * 1024**3
 
-    @patch("training.callbacks.torch")
-    @patch("training.callbacks.psutil.Process")
+    @patch("src.training.callbacks.torch")
+    @patch("src.training.callbacks.psutil.Process")
     def test_gpu_warning_at_high_utilization(
         self, mock_proc_cls: MagicMock, mock_torch: MagicMock,
     ) -> None:
@@ -236,8 +236,8 @@ class TestMemoryMonitorCallback:
         # Should not raise, just log warning internally
         cb.on_log(_make_args(), _make_state(), _make_control())
 
-    @patch("training.callbacks.torch")
-    @patch("training.callbacks.psutil.Process")
+    @patch("src.training.callbacks.torch")
+    @patch("src.training.callbacks.psutil.Process")
     def test_no_warning_below_threshold(
         self, mock_proc_cls: MagicMock, mock_torch: MagicMock,
     ) -> None:
@@ -256,8 +256,8 @@ class TestMemoryMonitorCallback:
         cb = MemoryMonitorCallback()
         cb.on_log(_make_args(), _make_state(), _make_control())
 
-    @patch("training.callbacks.torch")
-    @patch("training.callbacks.psutil.Process")
+    @patch("src.training.callbacks.torch")
+    @patch("src.training.callbacks.psutil.Process")
     def test_on_train_end_with_gpu(
         self, mock_proc_cls: MagicMock, mock_torch: MagicMock,
     ) -> None:
@@ -271,8 +271,8 @@ class TestMemoryMonitorCallback:
         cb._peak_gpu_reserved = 6 * 1024**3
         cb.on_train_end(_make_args(), _make_state(), _make_control())
 
-    @patch("training.callbacks.torch")
-    @patch("training.callbacks.psutil.Process")
+    @patch("src.training.callbacks.torch")
+    @patch("src.training.callbacks.psutil.Process")
     def test_on_train_end_without_gpu(
         self, mock_proc_cls: MagicMock, mock_torch: MagicMock,
     ) -> None:
@@ -494,7 +494,7 @@ class TestCheckpointCleanupCallback:
         remaining = sorted(tmp_path.glob("checkpoint-*"))
         assert len(remaining) == 2
 
-    @patch("training.callbacks.boto3.client")
+    @patch("src.training.callbacks.boto3.client")
     def test_upload_to_s3(self, mock_boto: MagicMock, tmp_path: Path) -> None:
         checkpoint = tmp_path / "checkpoint-100"
         checkpoint.mkdir()
@@ -539,7 +539,7 @@ class TestGradientNormCallback:
         cb = GradientNormCallback()
         cb.on_log(_make_args(), _make_state(), _make_control(), logs=None)
 
-    @patch("training.callbacks.torch")
+    @patch("src.training.callbacks.torch")
     def test_per_layer_norms_at_interval(self, mock_torch: MagicMock) -> None:
         cb = GradientNormCallback(per_layer_interval=100)
 
@@ -599,7 +599,7 @@ class TestGradientNormCallback:
             logs={"grad_norm": 1.0},
         )
 
-    @patch("training.callbacks.torch")
+    @patch("src.training.callbacks.torch")
     def test_skips_params_without_grad(self, mock_torch: MagicMock) -> None:
         cb = GradientNormCallback(per_layer_interval=100)
 
@@ -769,7 +769,7 @@ class TestEarlyStoppingWithPatience:
 
 class TestModuleExports:
     def test_all_callbacks_in_module_all(self) -> None:
-        from training import callbacks
+        from src.training import callbacks
 
         expected = {
             "LoggingCallback",
@@ -783,7 +783,7 @@ class TestModuleExports:
         assert expected == set(callbacks.__all__)
 
     def test_all_importable_from_package(self) -> None:
-        from training import (
+        from src.training import (
             CheckpointCleanupCallback,
             CostTrackingCallback,
             EarlyStoppingWithPatience,

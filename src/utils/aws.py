@@ -4,6 +4,8 @@ Provides cached access to boto3 sessions, Secrets Manager secrets,
 SSM Parameter Store parameters, and account/region metadata.
 """
 
+from __future__ import annotations
+
 import os
 import time
 from typing import Any

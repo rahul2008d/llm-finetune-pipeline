@@ -1,0 +1,34 @@
+# Default evaluation configuration
+model_path: ""  # set at runtime via CLI --model-path
+
+benchmarks:
+  - mmlu
+  - hellaswag
+  - arc_challenge
+  - truthfulqa_mc
+
+custom_tasks: []
+  # Example:
+  # - name: domain_qa
+  #   dataset_path: s3://bucket/eval-data/domain_qa.jsonl
+  #   metrics: [exact_match, rouge_l, f1]
+
+generation_eval:
+  prompts_path: ""  # path to JSONL file with test prompts
+  max_new_tokens: 512
+  temperature: 0.1
+  top_p: 0.9
+  do_sample: false
+
+perplexity:
+  dataset_split: "test"
+  stride: 512
+  batch_size: 8
+
+compare_against_base: true
+
+thresholds:
+  max_perplexity: 15.0
+  min_rouge_l: 0.3
+  min_exact_match: 0.5
+  max_toxicity: 0.1

@@ -197,8 +197,8 @@ class TestBuildCallbacks:
 
 
 class TestSetSeeds:
-    @patch("training.trainer.torch")
-    @patch("training.trainer.set_seed")
+    @patch("src.training.trainer.torch")
+    @patch("src.training.trainer.set_seed")
     def test_sets_all_seeds(
         self, mock_set_seed: MagicMock, mock_torch: MagicMock,
     ) -> None:
@@ -208,8 +208,8 @@ class TestSetSeeds:
         mock_torch.manual_seed.assert_called_once_with(42)
         mock_torch.cuda.manual_seed_all.assert_called_once_with(42)
 
-    @patch("training.trainer.torch")
-    @patch("training.trainer.set_seed")
+    @patch("src.training.trainer.torch")
+    @patch("src.training.trainer.set_seed")
     def test_sets_cudnn_flags(
         self, mock_set_seed: MagicMock, mock_torch: MagicMock,
     ) -> None:
@@ -311,8 +311,8 @@ class TestFlatConfigParams:
 
 
 class TestLoadDatasets:
-    @patch("training.trainer.os.path.isdir", return_value=True)
-    @patch("training.trainer.load_from_disk")
+    @patch("src.training.trainer.os.path.isdir", return_value=True)
+    @patch("src.training.trainer.load_from_disk")
     def test_direct_path_loads_train_and_validation(
         self, mock_load: MagicMock, mock_isdir: MagicMock,
     ) -> None:
@@ -329,7 +329,7 @@ class TestLoadDatasets:
         assert train is mock_train
         assert val is mock_val
 
-    @patch("training.trainer.load_from_disk")
+    @patch("src.training.trainer.load_from_disk")
     def test_dataset_id_uses_registry(self, mock_load: MagicMock) -> None:
         mock_load.return_value = MagicMock()
         mock_registry = MagicMock()
@@ -338,7 +338,7 @@ class TestLoadDatasets:
         mock_info.validation_path = "/registry/val"
         mock_registry.return_value.get.return_value = mock_info
 
-        with patch("data.registry.DatasetRegistry", mock_registry):
+        with patch("src.data.registry.DatasetRegistry", mock_registry):
             trainer = FineTuneTrainer(
                 _make_config(dataset_id="my-ds", dataset_path=None),
             )
@@ -348,7 +348,7 @@ class TestLoadDatasets:
         mock_load.assert_any_call("/registry/train")
         mock_load.assert_any_call("/registry/val")
 
-    @patch("training.trainer.load_from_disk")
+    @patch("src.training.trainer.load_from_disk")
     def test_direct_path_constructs_correct_paths(
         self, mock_load: MagicMock,
     ) -> None:
@@ -390,7 +390,7 @@ class TestGetCostEstimate:
 
 
 class TestUploadAdapter:
-    @patch("training.trainer.boto3.client")
+    @patch("src.training.trainer.boto3.client")
     def test_uploads_files_to_s3(self, mock_boto: MagicMock, tmp_path: Path) -> None:
         adapter_dir = tmp_path / "adapter"
         adapter_dir.mkdir()
@@ -407,7 +407,7 @@ class TestUploadAdapter:
         assert mock_s3.upload_file.call_count == 2
         assert "run-001/adapter" in uri
 
-    @patch("training.trainer.boto3.client")
+    @patch("src.training.trainer.boto3.client")
     def test_returns_s3_uri(self, mock_boto: MagicMock, tmp_path: Path) -> None:
         adapter_dir = tmp_path / "adapter"
         adapter_dir.mkdir()
@@ -430,7 +430,7 @@ class TestUploadAdapter:
 # ═══════════════════════════════════════════════════════════════
 
 
-@patch("training.trainer.os.path.isdir", return_value=True)
+@patch("src.training.trainer.os.path.isdir", return_value=True)
 class TestTrainPipeline:
     def _setup_mocks(self) -> dict[str, MagicMock]:
         """Create a coherent set of mocks for the full train pipeline."""
@@ -467,12 +467,12 @@ class TestTrainPipeline:
 
         return mocks
 
-    @patch("training.trainer.boto3.client")
-    @patch("training.trainer.SFTTrainer")
-    @patch("training.trainer.load_from_disk")
-    @patch("training.trainer.mlflow")
-    @patch("training.trainer.torch")
-    @patch("training.trainer.set_seed")
+    @patch("src.training.trainer.boto3.client")
+    @patch("src.training.trainer.SFTTrainer")
+    @patch("src.training.trainer.load_from_disk")
+    @patch("src.training.trainer.mlflow")
+    @patch("src.training.trainer.torch")
+    @patch("src.training.trainer.set_seed")
     def test_full_train_returns_result(
         self,
         mock_set_seed: MagicMock,
@@ -513,12 +513,12 @@ class TestTrainPipeline:
         assert result.total_steps == 500
         assert result.adapter_s3_uri.startswith("s3://")
 
-    @patch("training.trainer.boto3.client")
-    @patch("training.trainer.SFTTrainer")
-    @patch("training.trainer.load_from_disk")
-    @patch("training.trainer.mlflow")
-    @patch("training.trainer.torch")
-    @patch("training.trainer.set_seed")
+    @patch("src.training.trainer.boto3.client")
+    @patch("src.training.trainer.SFTTrainer")
+    @patch("src.training.trainer.load_from_disk")
+    @patch("src.training.trainer.mlflow")
+    @patch("src.training.trainer.torch")
+    @patch("src.training.trainer.set_seed")
     def test_seeds_set_before_training(
         self,
         mock_set_seed: MagicMock,
@@ -546,12 +546,12 @@ class TestTrainPipeline:
         mock_set_seed.assert_called_once_with(42)
         mock_torch.manual_seed.assert_called_once_with(42)
 
-    @patch("training.trainer.boto3.client")
-    @patch("training.trainer.SFTTrainer")
-    @patch("training.trainer.load_from_disk")
-    @patch("training.trainer.mlflow")
-    @patch("training.trainer.torch")
-    @patch("training.trainer.set_seed")
+    @patch("src.training.trainer.boto3.client")
+    @patch("src.training.trainer.SFTTrainer")
+    @patch("src.training.trainer.load_from_disk")
+    @patch("src.training.trainer.mlflow")
+    @patch("src.training.trainer.torch")
+    @patch("src.training.trainer.set_seed")
     def test_resume_from_checkpoint(
         self,
         mock_set_seed: MagicMock,
@@ -584,12 +584,12 @@ class TestTrainPipeline:
             resume_from_checkpoint="/ckpt/checkpoint-200",
         )
 
-    @patch("training.trainer.boto3.client")
-    @patch("training.trainer.SFTTrainer")
-    @patch("training.trainer.load_from_disk")
-    @patch("training.trainer.mlflow")
-    @patch("training.trainer.torch")
-    @patch("training.trainer.set_seed")
+    @patch("src.training.trainer.boto3.client")
+    @patch("src.training.trainer.SFTTrainer")
+    @patch("src.training.trainer.load_from_disk")
+    @patch("src.training.trainer.mlflow")
+    @patch("src.training.trainer.torch")
+    @patch("src.training.trainer.set_seed")
     def test_no_resume_calls_train_without_arg(
         self,
         mock_set_seed: MagicMock,
@@ -616,12 +616,12 @@ class TestTrainPipeline:
 
         mock_trainer.train.assert_called_once_with()
 
-    @patch("training.trainer.boto3.client")
-    @patch("training.trainer.SFTTrainer")
-    @patch("training.trainer.load_from_disk")
-    @patch("training.trainer.mlflow")
-    @patch("training.trainer.torch")
-    @patch("training.trainer.set_seed")
+    @patch("src.training.trainer.boto3.client")
+    @patch("src.training.trainer.SFTTrainer")
+    @patch("src.training.trainer.load_from_disk")
+    @patch("src.training.trainer.mlflow")
+    @patch("src.training.trainer.torch")
+    @patch("src.training.trainer.set_seed")
     def test_sft_trainer_constructed_correctly(
         self,
         mock_set_seed: MagicMock,
@@ -655,12 +655,12 @@ class TestTrainPipeline:
         assert kwargs["eval_dataset"] is m["eval_ds"]
         assert len(kwargs["callbacks"]) == 7
 
-    @patch("training.trainer.boto3.client")
-    @patch("training.trainer.SFTTrainer")
-    @patch("training.trainer.load_from_disk")
-    @patch("training.trainer.mlflow")
-    @patch("training.trainer.torch")
-    @patch("training.trainer.set_seed")
+    @patch("src.training.trainer.boto3.client")
+    @patch("src.training.trainer.SFTTrainer")
+    @patch("src.training.trainer.load_from_disk")
+    @patch("src.training.trainer.mlflow")
+    @patch("src.training.trainer.torch")
+    @patch("src.training.trainer.set_seed")
     def test_adapter_saved_after_training(
         self,
         mock_set_seed: MagicMock,
@@ -688,12 +688,12 @@ class TestTrainPipeline:
         mock_trainer.model.save_pretrained.assert_called_once()
         m["model_loader"].load_tokenizer.return_value.save_pretrained.assert_called_once()
 
-    @patch("training.trainer.boto3.client")
-    @patch("training.trainer.SFTTrainer")
-    @patch("training.trainer.load_from_disk")
-    @patch("training.trainer.mlflow")
-    @patch("training.trainer.torch")
-    @patch("training.trainer.set_seed")
+    @patch("src.training.trainer.boto3.client")
+    @patch("src.training.trainer.SFTTrainer")
+    @patch("src.training.trainer.load_from_disk")
+    @patch("src.training.trainer.mlflow")
+    @patch("src.training.trainer.torch")
+    @patch("src.training.trainer.set_seed")
     def test_mlflow_experiment_set(
         self,
         mock_set_seed: MagicMock,
@@ -720,12 +720,12 @@ class TestTrainPipeline:
 
         mock_mlflow.set_experiment.assert_called_once_with("test-experiment")
 
-    @patch("training.trainer.boto3.client")
-    @patch("training.trainer.SFTTrainer")
-    @patch("training.trainer.load_from_disk")
-    @patch("training.trainer.mlflow")
-    @patch("training.trainer.torch")
-    @patch("training.trainer.set_seed")
+    @patch("src.training.trainer.boto3.client")
+    @patch("src.training.trainer.SFTTrainer")
+    @patch("src.training.trainer.load_from_disk")
+    @patch("src.training.trainer.mlflow")
+    @patch("src.training.trainer.torch")
+    @patch("src.training.trainer.set_seed")
     def test_mlflow_tracking_uri_from_env(
         self,
         mock_set_seed: MagicMock,
@@ -753,12 +753,12 @@ class TestTrainPipeline:
 
         mock_mlflow.set_tracking_uri.assert_called_once_with("http://mlflow:5000")
 
-    @patch("training.trainer.boto3.client")
-    @patch("training.trainer.SFTTrainer")
-    @patch("training.trainer.load_from_disk")
-    @patch("training.trainer.mlflow")
-    @patch("training.trainer.torch")
-    @patch("training.trainer.set_seed")
+    @patch("src.training.trainer.boto3.client")
+    @patch("src.training.trainer.SFTTrainer")
+    @patch("src.training.trainer.load_from_disk")
+    @patch("src.training.trainer.mlflow")
+    @patch("src.training.trainer.torch")
+    @patch("src.training.trainer.set_seed")
     def test_mlflow_metrics_logged(
         self,
         mock_set_seed: MagicMock,
@@ -786,12 +786,12 @@ class TestTrainPipeline:
         assert mock_mlflow.log_metrics.call_count >= 2
         assert mock_mlflow.log_params.call_count == 1
 
-    @patch("training.trainer.boto3.client")
-    @patch("training.trainer.SFTTrainer")
-    @patch("training.trainer.load_from_disk")
-    @patch("training.trainer.mlflow")
-    @patch("training.trainer.torch")
-    @patch("training.trainer.set_seed")
+    @patch("src.training.trainer.boto3.client")
+    @patch("src.training.trainer.SFTTrainer")
+    @patch("src.training.trainer.load_from_disk")
+    @patch("src.training.trainer.mlflow")
+    @patch("src.training.trainer.torch")
+    @patch("src.training.trainer.set_seed")
     def test_best_metric_none_falls_back(
         self,
         mock_set_seed: MagicMock,
@@ -827,14 +827,14 @@ class TestTrainPipeline:
 
 class TestModuleExports:
     def test_trainer_in_all(self) -> None:
-        from training import trainer
+        from src.training import trainer
 
         assert "FineTuneTrainer" in trainer.__all__
         assert "TrainingResult" in trainer.__all__
 
     def test_importable_from_package(self) -> None:
-        from training import FineTuneTrainer as FT
-        from training import TrainingResult as TR
+        from src.training import FineTuneTrainer as FT
+        from src.training import TrainingResult as TR
 
         assert FT is FineTuneTrainer
         assert TR is TrainingResult

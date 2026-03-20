@@ -154,14 +154,14 @@ class TestSSMResolution:
         result = _resolve_ssm_string("${ssm:/missing/param:-fallback}")
         assert result == "fallback"
 
-    @patch("config.loader._get_ssm_parameter")
+    @patch("src.config.loader._get_ssm_parameter")
     def test_ssm_string_resolved(self, mock_ssm: MagicMock) -> None:
         mock_ssm.return_value = "resolved-value"
         result = _resolve_ssm_string("${ssm:/my/param}")
         mock_ssm.assert_called_once_with("/my/param")
         assert result == "resolved-value"
 
-    @patch("config.loader._get_ssm_parameter")
+    @patch("src.config.loader._get_ssm_parameter")
     def test_ssm_dict_recursive(self, mock_ssm: MagicMock) -> None:
         mock_ssm.return_value = "ssm-val"
         data = {

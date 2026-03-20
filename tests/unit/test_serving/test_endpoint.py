@@ -19,11 +19,11 @@ class TestSageMakerEndpointHandler:
         assert handler.instance_type == "ml.g5.2xlarge"
         assert handler.instance_count == 1
 
-    @patch("serving.endpoint.boto3")
-    def test_delete(self, mock_boto3: MagicMock) -> None:
+    @patch("boto3.client")
+    def test_delete(self, mock_boto3_client: MagicMock) -> None:
         """Test endpoint deletion."""
         mock_client = MagicMock()
-        mock_boto3.client.return_value = mock_client
+        mock_boto3_client.return_value = mock_client
 
         handler = SageMakerEndpointHandler(
             model_path="s3://bucket/model",

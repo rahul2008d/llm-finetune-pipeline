@@ -5,6 +5,8 @@ SageMaker job metadata, and Python warnings integration, plus ``get_logger``
 to obtain a bound logger for any module.
 """
 
+from __future__ import annotations
+
 import logging
 import os
 import sys

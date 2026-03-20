@@ -44,8 +44,13 @@ class TestGetSession:
         monkeypatch.setenv("AWS_PROFILE", "my-profile")
         # get_session should not raise; it creates a session object
         # (profile resolution happens later on actual API calls)
-        session = get_session()
-        assert isinstance(session, boto3.Session)
+        from unittest.mock import patch, MagicMock
+
+        mock_session = MagicMock(spec=boto3.Session)
+        with patch("src.utils.aws.boto3.Session", return_value=mock_session) as mock_cls:
+            session = get_session()
+            mock_cls.assert_called_once_with(profile_name="my-profile")
+            assert session is mock_session
 
 
 class TestGetSecret:

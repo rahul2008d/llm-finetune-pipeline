@@ -67,7 +67,7 @@ class TestDownloadConfig:
         with pytest.raises(ValueError, match="CONFIG_S3_URI"):
             _download_config("")
 
-    @patch("training.train_entry.boto3")
+    @patch("src.training.train_entry.boto3")
     def test_downloads_yaml(self, mock_boto: MagicMock) -> None:
         mock_s3 = MagicMock()
         mock_boto.client.return_value = mock_s3
@@ -86,7 +86,7 @@ class TestDownloadConfig:
         assert result["experiment_name"] == "test"
         assert result["dataset_id"] == "ds-1"
 
-    @patch("training.train_entry.boto3")
+    @patch("src.training.train_entry.boto3")
     def test_parses_bucket_and_key(self, mock_boto: MagicMock) -> None:
         mock_s3 = MagicMock()
         mock_boto.client.return_value = mock_s3
@@ -145,10 +145,10 @@ class TestMain:
             "output_s3_uri": "s3://bucket/output",
         }
 
-    @patch("training.train_entry.shutil.copy2")
-    @patch("training.train_entry.FineTuneTrainer")
-    @patch("training.train_entry.TrainingJobConfig")
-    @patch("training.train_entry._download_config")
+    @patch("src.training.train_entry.shutil.copy2")
+    @patch("src.training.train_entry.FineTuneTrainer")
+    @patch("src.training.train_entry.TrainingJobConfig")
+    @patch("src.training.train_entry._download_config")
     def test_main_happy_path(
         self,
         mock_download: MagicMock,
@@ -205,10 +205,10 @@ class TestMain:
             written = json.loads(result_path.read_text())
             assert written["run_id"] == "run-123"
 
-    @patch("training.train_entry.shutil.copy2")
-    @patch("training.train_entry.FineTuneTrainer")
-    @patch("training.train_entry.TrainingJobConfig")
-    @patch("training.train_entry._download_config")
+    @patch("src.training.train_entry.shutil.copy2")
+    @patch("src.training.train_entry.FineTuneTrainer")
+    @patch("src.training.train_entry.TrainingJobConfig")
+    @patch("src.training.train_entry._download_config")
     def test_main_copies_local_adapter(
         self,
         mock_download: MagicMock,
@@ -251,9 +251,9 @@ class TestMain:
             # copy2 was called for the adapter files
             assert mock_copy.call_count == 2
 
-    @patch("training.train_entry.FineTuneTrainer")
-    @patch("training.train_entry.TrainingJobConfig")
-    @patch("training.train_entry._download_config")
+    @patch("src.training.train_entry.FineTuneTrainer")
+    @patch("src.training.train_entry.TrainingJobConfig")
+    @patch("src.training.train_entry._download_config")
     def test_main_overrides_dataset_path(
         self,
         mock_download: MagicMock,
@@ -294,7 +294,7 @@ class TestMain:
             assert "dataset_id" not in validate_arg
             assert validate_arg["_validation_dir"] == "/custom/val"
 
-    @patch("training.train_entry._download_config")
+    @patch("src.training.train_entry._download_config")
     def test_main_raises_on_missing_config_uri(
         self, mock_download: MagicMock,
     ) -> None:

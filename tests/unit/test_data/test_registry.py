@@ -98,7 +98,7 @@ def _mock_s3_with_data(data: dict) -> MagicMock:
 
 def _make_registry(mock_s3: MagicMock) -> DatasetRegistry:
     """Create a DatasetRegistry wired to the given mock S3 client."""
-    with patch("data.registry.boto3") as mock_boto:
+    with patch("src.data.registry.boto3") as mock_boto:
         mock_boto.client.return_value = mock_s3
         reg = DatasetRegistry(bucket="test-bucket")
     return reg
@@ -113,7 +113,7 @@ class TestConstructor:
     def test_requires_bucket(self) -> None:
         with (
             patch.dict("os.environ", {}, clear=True),
-            patch("data.registry.boto3"),
+            patch("src.data.registry.boto3"),
             pytest.raises(ValueError, match="Registry bucket"),
         ):
             DatasetRegistry()
@@ -121,7 +121,7 @@ class TestConstructor:
     def test_bucket_from_env(self) -> None:
         with (
             patch.dict("os.environ", {"REGISTRY_BUCKET": "env-bucket"}),
-            patch("data.registry.boto3") as mock_boto,
+            patch("src.data.registry.boto3") as mock_boto,
         ):
             mock_boto.client.return_value = MagicMock()
             reg = DatasetRegistry()
@@ -130,7 +130,7 @@ class TestConstructor:
     def test_explicit_bucket_wins(self) -> None:
         with (
             patch.dict("os.environ", {"REGISTRY_BUCKET": "env-bucket"}),
-            patch("data.registry.boto3") as mock_boto,
+            patch("src.data.registry.boto3") as mock_boto,
         ):
             mock_boto.client.return_value = MagicMock()
             reg = DatasetRegistry(bucket="explicit-bucket")
@@ -227,7 +227,7 @@ class TestRegister:
         mock_s3 = _mock_s3_empty()
         reg = _make_registry(mock_s3)
 
-        with patch("data.registry.getpass") as mock_gp:
+        with patch("src.data.registry.getpass") as mock_gp:
             mock_gp.getuser.return_value = "os-user"
             reg.register(_manifest(), _lineage())
 

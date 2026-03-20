@@ -4,6 +4,8 @@ Wraps boto3 S3 operations with tenacity-based retries and structured logging.
 Files larger than 100 MB are uploaded via multipart transfer automatically.
 """
 
+from __future__ import annotations
+
 import os
 from pathlib import Path
 from typing import Any

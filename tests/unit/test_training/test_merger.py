@@ -115,7 +115,7 @@ class TestResolveS3Input:
         result = AdapterMerger._resolve_s3_input("/local/adapter")
         assert result == "/local/adapter"
 
-    @patch("training.merger.boto3")
+    @patch("src.training.merger.boto3")
     def test_s3_path_downloads_files(self, mock_boto: MagicMock) -> None:
         mock_s3 = MagicMock()
         mock_boto.client.return_value = mock_s3
@@ -136,7 +136,7 @@ class TestResolveS3Input:
         assert not result.startswith("s3://")
         assert mock_s3.download_file.call_count == 2
 
-    @patch("training.merger.boto3")
+    @patch("src.training.merger.boto3")
     def test_s3_empty_contents(self, mock_boto: MagicMock) -> None:
         mock_s3 = MagicMock()
         mock_boto.client.return_value = mock_s3
@@ -217,7 +217,7 @@ class TestListSafetensors:
 
 
 class TestUploadToS3:
-    @patch("training.merger.boto3")
+    @patch("src.training.merger.boto3")
     def test_uploads_all_files(self, mock_boto: MagicMock) -> None:
         mock_s3 = MagicMock()
         mock_boto.client.return_value = mock_s3
@@ -230,7 +230,7 @@ class TestUploadToS3:
 
         assert mock_s3.upload_file.call_count == 2
 
-    @patch("training.merger.boto3")
+    @patch("src.training.merger.boto3")
     def test_correct_bucket_and_prefix(self, mock_boto: MagicMock) -> None:
         mock_s3 = MagicMock()
         mock_boto.client.return_value = mock_s3
@@ -253,9 +253,9 @@ class TestUploadToS3:
 
 
 class TestVerifyModel:
-    @patch("training.merger.AutoTokenizer")
-    @patch("training.merger.AutoModelForCausalLM")
-    @patch("training.merger.torch")
+    @patch("src.training.merger.AutoTokenizer")
+    @patch("src.training.merger.AutoModelForCausalLM")
+    @patch("src.training.merger.torch")
     def test_returns_generated_text(
         self,
         mock_torch: MagicMock,
@@ -286,9 +286,9 @@ class TestVerifyModel:
         mock_auto_model.from_pretrained.assert_called_once()
         model.generate.assert_called_once()
 
-    @patch("training.merger.AutoTokenizer")
-    @patch("training.merger.AutoModelForCausalLM")
-    @patch("training.merger.torch")
+    @patch("src.training.merger.AutoTokenizer")
+    @patch("src.training.merger.AutoModelForCausalLM")
+    @patch("src.training.merger.torch")
     def test_moves_inputs_to_device(
         self,
         mock_torch: MagicMock,
@@ -325,10 +325,10 @@ class TestVerifyModel:
 
 
 class TestMergeAdapter:
-    @patch("training.merger.AdapterMerger._verify_model")
-    @patch("training.merger.AutoTokenizer")
-    @patch("training.merger.PeftModel")
-    @patch("training.merger.AutoModelForCausalLM")
+    @patch("src.training.merger.AdapterMerger._verify_model")
+    @patch("src.training.merger.AutoTokenizer")
+    @patch("src.training.merger.PeftModel")
+    @patch("src.training.merger.AutoModelForCausalLM")
     def test_local_merge_happy_path(
         self,
         mock_auto_model: MagicMock,
@@ -387,10 +387,10 @@ class TestMergeAdapter:
                 str(output_dir), safe_serialization=True,
             )
 
-    @patch("training.merger.AdapterMerger._verify_model")
-    @patch("training.merger.AutoTokenizer")
-    @patch("training.merger.PeftModel")
-    @patch("training.merger.AutoModelForCausalLM")
+    @patch("src.training.merger.AdapterMerger._verify_model")
+    @patch("src.training.merger.AutoTokenizer")
+    @patch("src.training.merger.PeftModel")
+    @patch("src.training.merger.AutoModelForCausalLM")
     def test_bfloat16_dtype(
         self,
         mock_auto_model: MagicMock,
@@ -426,11 +426,11 @@ class TestMergeAdapter:
             call_kwargs = mock_auto_model.from_pretrained.call_args.kwargs
             assert call_kwargs["torch_dtype"] is torch.bfloat16
 
-    @patch("training.merger.AdapterMerger._upload_to_s3")
-    @patch("training.merger.AdapterMerger._verify_model")
-    @patch("training.merger.AutoTokenizer")
-    @patch("training.merger.PeftModel")
-    @patch("training.merger.AutoModelForCausalLM")
+    @patch("src.training.merger.AdapterMerger._upload_to_s3")
+    @patch("src.training.merger.AdapterMerger._verify_model")
+    @patch("src.training.merger.AutoTokenizer")
+    @patch("src.training.merger.PeftModel")
+    @patch("src.training.merger.AutoModelForCausalLM")
     def test_s3_output_uploads(
         self,
         mock_auto_model: MagicMock,
@@ -465,11 +465,11 @@ class TestMergeAdapter:
             mock_upload.assert_called_once()
             assert result.merged_model_path == "s3://bucket/models/merged-v1"
 
-    @patch("training.merger.AdapterMerger._resolve_s3_input")
-    @patch("training.merger.AdapterMerger._verify_model")
-    @patch("training.merger.AutoTokenizer")
-    @patch("training.merger.PeftModel")
-    @patch("training.merger.AutoModelForCausalLM")
+    @patch("src.training.merger.AdapterMerger._resolve_s3_input")
+    @patch("src.training.merger.AdapterMerger._verify_model")
+    @patch("src.training.merger.AutoTokenizer")
+    @patch("src.training.merger.PeftModel")
+    @patch("src.training.merger.AutoModelForCausalLM")
     def test_s3_adapter_input_resolved(
         self,
         mock_auto_model: MagicMock,
@@ -509,10 +509,10 @@ class TestMergeAdapter:
             peft_call = mock_peft.from_pretrained.call_args
             assert str(local_adapter) in str(peft_call)
 
-    @patch("training.merger.AdapterMerger._verify_model")
-    @patch("training.merger.AutoTokenizer")
-    @patch("training.merger.PeftModel")
-    @patch("training.merger.AutoModelForCausalLM")
+    @patch("src.training.merger.AdapterMerger._verify_model")
+    @patch("src.training.merger.AutoTokenizer")
+    @patch("src.training.merger.PeftModel")
+    @patch("src.training.merger.AutoModelForCausalLM")
     def test_push_to_hub(
         self,
         mock_auto_model: MagicMock,
@@ -552,10 +552,10 @@ class TestMergeAdapter:
             )
             tokenizer.push_to_hub.assert_called_once_with("org/my-merged-model")
 
-    @patch("training.merger.AdapterMerger._verify_model")
-    @patch("training.merger.AutoTokenizer")
-    @patch("training.merger.PeftModel")
-    @patch("training.merger.AutoModelForCausalLM")
+    @patch("src.training.merger.AdapterMerger._verify_model")
+    @patch("src.training.merger.AutoTokenizer")
+    @patch("src.training.merger.PeftModel")
+    @patch("src.training.merger.AutoModelForCausalLM")
     def test_push_to_hub_requires_model_id(
         self,
         mock_auto_model: MagicMock,
@@ -590,10 +590,10 @@ class TestMergeAdapter:
                     hub_model_id=None,
                 )
 
-    @patch("training.merger.AdapterMerger._verify_model")
-    @patch("training.merger.AutoTokenizer")
-    @patch("training.merger.PeftModel")
-    @patch("training.merger.AutoModelForCausalLM")
+    @patch("src.training.merger.AdapterMerger._verify_model")
+    @patch("src.training.merger.AutoTokenizer")
+    @patch("src.training.merger.PeftModel")
+    @patch("src.training.merger.AutoModelForCausalLM")
     def test_custom_device_map(
         self,
         mock_auto_model: MagicMock,
@@ -629,10 +629,10 @@ class TestMergeAdapter:
             call_kwargs = mock_auto_model.from_pretrained.call_args.kwargs
             assert call_kwargs["device_map"] == "cpu"
 
-    @patch("training.merger.AdapterMerger._verify_model")
-    @patch("training.merger.AutoTokenizer")
-    @patch("training.merger.PeftModel")
-    @patch("training.merger.AutoModelForCausalLM")
+    @patch("src.training.merger.AdapterMerger._verify_model")
+    @patch("src.training.merger.AutoTokenizer")
+    @patch("src.training.merger.PeftModel")
+    @patch("src.training.merger.AutoModelForCausalLM")
     def test_safe_serialization_flag(
         self,
         mock_auto_model: MagicMock,
@@ -667,10 +667,10 @@ class TestMergeAdapter:
             save_kwargs = model.save_pretrained.call_args
             assert save_kwargs.kwargs.get("safe_serialization") is True
 
-    @patch("training.merger.AdapterMerger._verify_model")
-    @patch("training.merger.AutoTokenizer")
-    @patch("training.merger.PeftModel")
-    @patch("training.merger.AutoModelForCausalLM")
+    @patch("src.training.merger.AdapterMerger._verify_model")
+    @patch("src.training.merger.AutoTokenizer")
+    @patch("src.training.merger.PeftModel")
+    @patch("src.training.merger.AutoModelForCausalLM")
     def test_tokenizer_saved(
         self,
         mock_auto_model: MagicMock,

@@ -389,7 +389,7 @@ class TestRunDvc:
         mock_result.returncode = 1
         mock_result.stderr = "dvc error"
 
-        with patch("data.versioning.subprocess.run", return_value=mock_result):
+        with patch("src.data.versioning.subprocess.run", return_value=mock_result):
             with pytest.raises(RuntimeError, match="DVC command failed"):
                 mgr._run_dvc(["status"])
 
@@ -398,7 +398,7 @@ class TestRunDvc:
         mock_result = MagicMock()
         mock_result.returncode = 0
 
-        with patch("data.versioning.subprocess.run", return_value=mock_result) as mock_run:
+        with patch("src.data.versioning.subprocess.run", return_value=mock_result) as mock_run:
             mgr._run_dvc(["status"])
 
         _, kwargs = mock_run.call_args

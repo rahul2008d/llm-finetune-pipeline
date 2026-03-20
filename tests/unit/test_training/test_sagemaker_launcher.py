@@ -60,7 +60,7 @@ def _make_config(**overrides: Any) -> TrainingJobConfig:
 
 def _make_launcher() -> SageMakerTrainingLauncher:
     """Create launcher with mocked AWS clients."""
-    with patch("training.sagemaker_launcher.boto3") as mock_boto:
+    with patch("src.training.sagemaker_launcher.boto3") as mock_boto:
         mock_boto.client.return_value = MagicMock()
         launcher = SageMakerTrainingLauncher()
     return launcher
@@ -215,14 +215,14 @@ class TestParseHpRanges:
 
 
 class TestLaunch:
-    @patch("training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.boto3")
     def test_launch_calls_estimator_fit(self, mock_boto: MagicMock) -> None:
         mock_boto.client.return_value = MagicMock()
         launcher = SageMakerTrainingLauncher()
 
         mock_estimator = MagicMock()
         with patch(
-            "training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
+            "src.training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
             return_value="s3://my-bucket/config.yaml",
         ):
             with patch(
@@ -257,7 +257,7 @@ class TestLaunch:
         assert fit_kwargs["wait"] is False
         assert isinstance(job_name, str)
 
-    @patch("training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.boto3")
     def test_launch_with_spot_instances(self, mock_boto: MagicMock) -> None:
         mock_boto.client.return_value = MagicMock()
         launcher = SageMakerTrainingLauncher()
@@ -273,7 +273,7 @@ class TestLaunch:
         )
 
         with patch(
-            "training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
+            "src.training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
             return_value="s3://bucket/config.yaml",
         ):
             with patch(
@@ -287,7 +287,7 @@ class TestLaunch:
         assert hf_kwargs["max_wait"] == 172800
         assert hf_kwargs["checkpoint_s3_uri"] == "s3://my-bucket/checkpoints"
 
-    @patch("training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.boto3")
     def test_launch_with_vpc(self, mock_boto: MagicMock) -> None:
         mock_boto.client.return_value = MagicMock()
         launcher = SageMakerTrainingLauncher()
@@ -303,7 +303,7 @@ class TestLaunch:
         )
 
         with patch(
-            "training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
+            "src.training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
             return_value="s3://bucket/config.yaml",
         ):
             with patch(
@@ -316,7 +316,7 @@ class TestLaunch:
         assert hf_kwargs["subnets"] == ["subnet-abc"]
         assert hf_kwargs["security_group_ids"] == ["sg-123"]
 
-    @patch("training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.boto3")
     def test_launch_multinode_distribution(self, mock_boto: MagicMock) -> None:
         mock_boto.client.return_value = MagicMock()
         launcher = SageMakerTrainingLauncher()
@@ -329,7 +329,7 @@ class TestLaunch:
         )
 
         with patch(
-            "training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
+            "src.training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
             return_value="s3://bucket/config.yaml",
         ):
             with patch(
@@ -344,7 +344,7 @@ class TestLaunch:
             "torch_distributed": {"enabled": True},
         }
 
-    @patch("training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.boto3")
     def test_launch_environment_includes_config_uri(
         self, mock_boto: MagicMock,
     ) -> None:
@@ -358,7 +358,7 @@ class TestLaunch:
         )
 
         with patch(
-            "training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
+            "src.training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
             return_value="s3://bucket/output/configs/test/config.yaml",
         ):
             with patch(
@@ -373,14 +373,14 @@ class TestLaunch:
         assert env["HF_TOKEN"] == "{{resolve:secretsmanager:hf-token}}"
         assert env["CUSTOM_VAR"] == "hello"
 
-    @patch("training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.boto3")
     def test_launch_tags(self, mock_boto: MagicMock) -> None:
         mock_boto.client.return_value = MagicMock()
         launcher = SageMakerTrainingLauncher()
         config = _make_config()
 
         with patch(
-            "training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
+            "src.training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
             return_value="s3://bucket/config.yaml",
         ):
             with patch(
@@ -396,14 +396,14 @@ class TestLaunch:
         project_tag = next(t for t in tags if t["Key"] == "Project")
         assert project_tag["Value"] == "test-experiment"
 
-    @patch("training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.boto3")
     def test_launch_returns_job_name(self, mock_boto: MagicMock) -> None:
         mock_boto.client.return_value = MagicMock()
         launcher = SageMakerTrainingLauncher()
         config = _make_config()
 
         with patch(
-            "training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
+            "src.training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
             return_value="s3://bucket/config.yaml",
         ):
             with patch(
@@ -423,8 +423,8 @@ class TestLaunch:
 
 
 class TestWaitForJob:
-    @patch("training.sagemaker_launcher.boto3")
-    @patch("training.sagemaker_launcher.time.sleep")
+    @patch("src.training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.time.sleep")
     def test_completed_job_returns_result(
         self, mock_sleep: MagicMock, mock_boto: MagicMock,
     ) -> None:
@@ -455,8 +455,8 @@ class TestWaitForJob:
         assert result.adapter_s3_uri == "s3://bucket/output/model.tar.gz"
         mock_sleep.assert_not_called()
 
-    @patch("training.sagemaker_launcher.boto3")
-    @patch("training.sagemaker_launcher.time.sleep")
+    @patch("src.training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.time.sleep")
     def test_polls_until_completed(
         self, mock_sleep: MagicMock, mock_boto: MagicMock,
     ) -> None:
@@ -481,8 +481,8 @@ class TestWaitForJob:
         mock_sleep.assert_called_with(10)
         assert isinstance(result, TrainingResult)
 
-    @patch("training.sagemaker_launcher.boto3")
-    @patch("training.sagemaker_launcher.time.sleep")
+    @patch("src.training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.time.sleep")
     def test_failed_job_raises(
         self, mock_sleep: MagicMock, mock_boto: MagicMock,
     ) -> None:
@@ -508,8 +508,8 @@ class TestWaitForJob:
         with pytest.raises(RuntimeError, match="OOM on GPU 0"):
             launcher.wait_for_job("fail-job")
 
-    @patch("training.sagemaker_launcher.boto3")
-    @patch("training.sagemaker_launcher.time.sleep")
+    @patch("src.training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.time.sleep")
     def test_stopped_job_raises(
         self, mock_sleep: MagicMock, mock_boto: MagicMock,
     ) -> None:
@@ -524,8 +524,8 @@ class TestWaitForJob:
         with pytest.raises(RuntimeError, match="was stopped"):
             launcher.wait_for_job("stop-job")
 
-    @patch("training.sagemaker_launcher.boto3")
-    @patch("training.sagemaker_launcher.time.sleep")
+    @patch("src.training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.time.sleep")
     def test_completed_with_no_metrics(
         self, mock_sleep: MagicMock, mock_boto: MagicMock,
     ) -> None:
@@ -553,7 +553,7 @@ class TestWaitForJob:
 
 
 class TestFetchCloudwatchLogs:
-    @patch("training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.boto3")
     def test_returns_log_lines(self, mock_boto: MagicMock) -> None:
         mock_sm = MagicMock()
         mock_logs = MagicMock()
@@ -584,7 +584,7 @@ class TestFetchCloudwatchLogs:
         assert "Epoch 1/3" in result
         assert "Loss: 0.45" in result
 
-    @patch("training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.boto3")
     def test_no_streams_returns_placeholder(self, mock_boto: MagicMock) -> None:
         mock_sm = MagicMock()
         mock_logs = MagicMock()
@@ -602,7 +602,7 @@ class TestFetchCloudwatchLogs:
         result = launcher._fetch_cloudwatch_logs("my-job")
         assert "no log streams found" in result
 
-    @patch("training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.boto3")
     def test_exception_returns_error_message(self, mock_boto: MagicMock) -> None:
         mock_sm = MagicMock()
         mock_logs = MagicMock()
@@ -627,7 +627,7 @@ class TestFetchCloudwatchLogs:
 
 
 class TestLaunchHpo:
-    @patch("training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.boto3")
     def test_launch_hpo_creates_tuner(self, mock_boto: MagicMock) -> None:
         mock_boto.client.return_value = MagicMock()
         launcher = SageMakerTrainingLauncher()
@@ -654,7 +654,7 @@ class TestLaunchHpo:
 
         mock_tuner = MagicMock()
         with patch(
-            "training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
+            "src.training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
             return_value="s3://bucket/config.yaml",
         ):
             with patch("sagemaker.huggingface.HuggingFace", return_value=MagicMock()):
@@ -682,7 +682,7 @@ class TestLaunchHpo:
         assert isinstance(tuner_name, str)
         assert len(tuner_name) <= 63
 
-    @patch("training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.boto3")
     def test_launch_hpo_default_values(self, mock_boto: MagicMock) -> None:
         mock_boto.client.return_value = MagicMock()
         launcher = SageMakerTrainingLauncher()
@@ -695,7 +695,7 @@ class TestLaunchHpo:
 
         mock_tuner = MagicMock()
         with patch(
-            "training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
+            "src.training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
             return_value="s3://bucket/config.yaml",
         ):
             with patch("sagemaker.huggingface.HuggingFace", return_value=MagicMock()):
@@ -712,7 +712,7 @@ class TestLaunchHpo:
         assert tuner_kwargs["max_jobs"] == 20
         assert tuner_kwargs["max_parallel_jobs"] == 4
 
-    @patch("training.sagemaker_launcher.boto3")
+    @patch("src.training.sagemaker_launcher.boto3")
     def test_launch_hpo_with_integer_ranges(self, mock_boto: MagicMock) -> None:
         mock_boto.client.return_value = MagicMock()
         launcher = SageMakerTrainingLauncher()
@@ -726,7 +726,7 @@ class TestLaunchHpo:
 
         mock_tuner = MagicMock()
         with patch(
-            "training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
+            "src.training.sagemaker_launcher.SageMakerTrainingLauncher._upload_config",
             return_value="s3://bucket/config.yaml",
         ):
             with patch("sagemaker.huggingface.HuggingFace", return_value=MagicMock()):

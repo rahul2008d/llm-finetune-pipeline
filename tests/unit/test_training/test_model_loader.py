@@ -88,9 +88,9 @@ class TestDtypeMap:
 
 
 class TestLoadBaseModel:
-    @patch("training.model_loader.prepare_model_for_kbit_training")
-    @patch("training.model_loader.AutoModelForCausalLM")
-    @patch("training.model_loader.BitsAndBytesConfig")
+    @patch("src.training.model_loader.prepare_model_for_kbit_training")
+    @patch("src.training.model_loader.AutoModelForCausalLM")
+    @patch("src.training.model_loader.BitsAndBytesConfig")
     def test_constructs_bnb_config_defaults(
         self,
         mock_bnb_cls: MagicMock,
@@ -113,9 +113,9 @@ class TestLoadBaseModel:
             bnb_4bit_use_double_quant=True,
         )
 
-    @patch("training.model_loader.prepare_model_for_kbit_training")
-    @patch("training.model_loader.AutoModelForCausalLM")
-    @patch("training.model_loader.BitsAndBytesConfig")
+    @patch("src.training.model_loader.prepare_model_for_kbit_training")
+    @patch("src.training.model_loader.AutoModelForCausalLM")
+    @patch("src.training.model_loader.BitsAndBytesConfig")
     def test_calls_from_pretrained_with_correct_args(
         self,
         mock_bnb_cls: MagicMock,
@@ -142,9 +142,9 @@ class TestLoadBaseModel:
             use_cache=False,
         )
 
-    @patch("training.model_loader.prepare_model_for_kbit_training")
-    @patch("training.model_loader.AutoModelForCausalLM")
-    @patch("training.model_loader.BitsAndBytesConfig")
+    @patch("src.training.model_loader.prepare_model_for_kbit_training")
+    @patch("src.training.model_loader.AutoModelForCausalLM")
+    @patch("src.training.model_loader.BitsAndBytesConfig")
     def test_enables_gradient_checkpointing(
         self,
         mock_bnb_cls: MagicMock,
@@ -164,9 +164,9 @@ class TestLoadBaseModel:
             gradient_checkpointing_kwargs={"use_reentrant": False},
         )
 
-    @patch("training.model_loader.prepare_model_for_kbit_training")
-    @patch("training.model_loader.AutoModelForCausalLM")
-    @patch("training.model_loader.BitsAndBytesConfig")
+    @patch("src.training.model_loader.prepare_model_for_kbit_training")
+    @patch("src.training.model_loader.AutoModelForCausalLM")
+    @patch("src.training.model_loader.BitsAndBytesConfig")
     def test_calls_prepare_model_for_kbit_training(
         self,
         mock_bnb_cls: MagicMock,
@@ -184,9 +184,9 @@ class TestLoadBaseModel:
 
         mock_prep.assert_called_once_with(mock_model)
 
-    @patch("training.model_loader.prepare_model_for_kbit_training")
-    @patch("training.model_loader.AutoModelForCausalLM")
-    @patch("training.model_loader.BitsAndBytesConfig")
+    @patch("src.training.model_loader.prepare_model_for_kbit_training")
+    @patch("src.training.model_loader.AutoModelForCausalLM")
+    @patch("src.training.model_loader.BitsAndBytesConfig")
     def test_returns_prepared_model(
         self,
         mock_bnb_cls: MagicMock,
@@ -205,9 +205,9 @@ class TestLoadBaseModel:
 
         assert result is prepared_model
 
-    @patch("training.model_loader.prepare_model_for_kbit_training")
-    @patch("training.model_loader.AutoModelForCausalLM")
-    @patch("training.model_loader.BitsAndBytesConfig")
+    @patch("src.training.model_loader.prepare_model_for_kbit_training")
+    @patch("src.training.model_loader.AutoModelForCausalLM")
+    @patch("src.training.model_loader.BitsAndBytesConfig")
     def test_fp4_quant_type(
         self,
         mock_bnb_cls: MagicMock,
@@ -226,9 +226,9 @@ class TestLoadBaseModel:
         _, kwargs = mock_bnb_cls.call_args
         assert kwargs["bnb_4bit_quant_type"] == "fp4"
 
-    @patch("training.model_loader.prepare_model_for_kbit_training")
-    @patch("training.model_loader.AutoModelForCausalLM")
-    @patch("training.model_loader.BitsAndBytesConfig")
+    @patch("src.training.model_loader.prepare_model_for_kbit_training")
+    @patch("src.training.model_loader.AutoModelForCausalLM")
+    @patch("src.training.model_loader.BitsAndBytesConfig")
     def test_float16_compute_dtype(
         self,
         mock_bnb_cls: MagicMock,
@@ -247,9 +247,9 @@ class TestLoadBaseModel:
         _, kwargs = mock_bnb_cls.call_args
         assert kwargs["bnb_4bit_compute_dtype"] is torch.float16
 
-    @patch("training.model_loader.prepare_model_for_kbit_training")
-    @patch("training.model_loader.AutoModelForCausalLM")
-    @patch("training.model_loader.BitsAndBytesConfig")
+    @patch("src.training.model_loader.prepare_model_for_kbit_training")
+    @patch("src.training.model_loader.AutoModelForCausalLM")
+    @patch("src.training.model_loader.BitsAndBytesConfig")
     def test_trust_remote_code_forwarded(
         self,
         mock_bnb_cls: MagicMock,
@@ -271,9 +271,9 @@ class TestLoadBaseModel:
         _, kwargs = mock_auto.from_pretrained.call_args
         assert kwargs["trust_remote_code"] is True
 
-    @patch("training.model_loader.prepare_model_for_kbit_training")
-    @patch("training.model_loader.AutoModelForCausalLM")
-    @patch("training.model_loader.BitsAndBytesConfig")
+    @patch("src.training.model_loader.prepare_model_for_kbit_training")
+    @patch("src.training.model_loader.AutoModelForCausalLM")
+    @patch("src.training.model_loader.BitsAndBytesConfig")
     def test_sdpa_attn_implementation(
         self,
         mock_bnb_cls: MagicMock,
@@ -295,9 +295,9 @@ class TestLoadBaseModel:
         _, kwargs = mock_auto.from_pretrained.call_args
         assert kwargs["attn_implementation"] == "sdpa"
 
-    @patch("training.model_loader.prepare_model_for_kbit_training")
-    @patch("training.model_loader.AutoModelForCausalLM")
-    @patch("training.model_loader.BitsAndBytesConfig")
+    @patch("src.training.model_loader.prepare_model_for_kbit_training")
+    @patch("src.training.model_loader.AutoModelForCausalLM")
+    @patch("src.training.model_loader.BitsAndBytesConfig")
     def test_double_quant_disabled(
         self,
         mock_bnb_cls: MagicMock,
@@ -323,7 +323,7 @@ class TestLoadBaseModel:
 
 
 class TestApplyLora:
-    @patch("training.model_loader.get_peft_model")
+    @patch("src.training.model_loader.get_peft_model")
     def test_builds_lora_config_defaults(
         self,
         mock_get_peft: MagicMock,
@@ -345,7 +345,7 @@ class TestApplyLora:
         assert peft_cfg.use_dora is False
         assert peft_cfg.use_rslora is False
 
-    @patch("training.model_loader.get_peft_model")
+    @patch("src.training.model_loader.get_peft_model")
     def test_passes_target_modules(
         self,
         mock_get_peft: MagicMock,
@@ -365,7 +365,7 @@ class TestApplyLora:
             "gate_proj", "up_proj", "down_proj",
         }
 
-    @patch("training.model_loader.get_peft_model")
+    @patch("src.training.model_loader.get_peft_model")
     def test_dora_enabled(
         self,
         mock_get_peft: MagicMock,
@@ -382,7 +382,7 @@ class TestApplyLora:
         peft_cfg = mock_get_peft.call_args[0][1]
         assert peft_cfg.use_dora is True
 
-    @patch("training.model_loader.get_peft_model")
+    @patch("src.training.model_loader.get_peft_model")
     def test_rslora_enabled(
         self,
         mock_get_peft: MagicMock,
@@ -399,7 +399,7 @@ class TestApplyLora:
         peft_cfg = mock_get_peft.call_args[0][1]
         assert peft_cfg.use_rslora is True
 
-    @patch("training.model_loader.get_peft_model")
+    @patch("src.training.model_loader.get_peft_model")
     def test_task_type_set_to_causal_lm(
         self,
         mock_get_peft: MagicMock,
@@ -416,7 +416,7 @@ class TestApplyLora:
         peft_cfg = mock_get_peft.call_args[0][1]
         assert peft_cfg.task_type is TaskType.CAUSAL_LM
 
-    @patch("training.model_loader.get_peft_model")
+    @patch("src.training.model_loader.get_peft_model")
     def test_returns_peft_model(
         self,
         mock_get_peft: MagicMock,
@@ -432,7 +432,7 @@ class TestApplyLora:
 
         assert result is peft_model
 
-    @patch("training.model_loader.get_peft_model")
+    @patch("src.training.model_loader.get_peft_model")
     def test_calls_print_trainable_parameters(
         self,
         mock_get_peft: MagicMock,
@@ -448,7 +448,7 @@ class TestApplyLora:
 
         peft_model.print_trainable_parameters.assert_called_once()
 
-    @patch("training.model_loader.get_peft_model")
+    @patch("src.training.model_loader.get_peft_model")
     def test_custom_rank_and_alpha(
         self,
         mock_get_peft: MagicMock,
@@ -466,7 +466,7 @@ class TestApplyLora:
         assert peft_cfg.r == 16
         assert peft_cfg.lora_alpha == 32
 
-    @patch("training.model_loader.get_peft_model")
+    @patch("src.training.model_loader.get_peft_model")
     def test_modules_to_save_forwarded(
         self,
         mock_get_peft: MagicMock,
@@ -483,7 +483,7 @@ class TestApplyLora:
         peft_cfg = mock_get_peft.call_args[0][1]
         assert peft_cfg.modules_to_save == ["embed_tokens", "lm_head"]
 
-    @patch("training.model_loader.get_peft_model")
+    @patch("src.training.model_loader.get_peft_model")
     def test_custom_target_modules(
         self,
         mock_get_peft: MagicMock,
@@ -500,7 +500,7 @@ class TestApplyLora:
         peft_cfg = mock_get_peft.call_args[0][1]
         assert set(peft_cfg.target_modules) == {"q_proj", "v_proj"}
 
-    @patch("training.model_loader.get_peft_model")
+    @patch("src.training.model_loader.get_peft_model")
     def test_lora_dropout_forwarded(
         self,
         mock_get_peft: MagicMock,
@@ -524,7 +524,7 @@ class TestApplyLora:
 
 
 class TestLoadTokenizer:
-    @patch("training.model_loader.AutoTokenizer")
+    @patch("src.training.model_loader.AutoTokenizer")
     def test_calls_from_pretrained(
         self,
         mock_tok_cls: MagicMock,
@@ -542,7 +542,7 @@ class TestLoadTokenizer:
             trust_remote_code=False,
         )
 
-    @patch("training.model_loader.AutoTokenizer")
+    @patch("src.training.model_loader.AutoTokenizer")
     def test_sets_pad_token_when_none(
         self,
         mock_tok_cls: MagicMock,
@@ -558,7 +558,7 @@ class TestLoadTokenizer:
 
         assert mock_tok.pad_token == "</s>"
 
-    @patch("training.model_loader.AutoTokenizer")
+    @patch("src.training.model_loader.AutoTokenizer")
     def test_preserves_existing_pad_token(
         self,
         mock_tok_cls: MagicMock,
@@ -573,7 +573,7 @@ class TestLoadTokenizer:
 
         assert mock_tok.pad_token == "<pad>"
 
-    @patch("training.model_loader.AutoTokenizer")
+    @patch("src.training.model_loader.AutoTokenizer")
     def test_sets_padding_side_right(
         self,
         mock_tok_cls: MagicMock,
@@ -588,7 +588,7 @@ class TestLoadTokenizer:
 
         assert mock_tok.padding_side == "right"
 
-    @patch("training.model_loader.AutoTokenizer")
+    @patch("src.training.model_loader.AutoTokenizer")
     def test_sets_model_max_length(
         self,
         mock_tok_cls: MagicMock,
@@ -603,7 +603,7 @@ class TestLoadTokenizer:
 
         assert mock_tok.model_max_length == 4096
 
-    @patch("training.model_loader.AutoTokenizer")
+    @patch("src.training.model_loader.AutoTokenizer")
     def test_custom_max_seq_length(
         self,
         mock_tok_cls: MagicMock,
@@ -618,7 +618,7 @@ class TestLoadTokenizer:
 
         assert mock_tok.model_max_length == 2048
 
-    @patch("training.model_loader.AutoTokenizer")
+    @patch("src.training.model_loader.AutoTokenizer")
     def test_returns_tokenizer(
         self,
         mock_tok_cls: MagicMock,
@@ -633,7 +633,7 @@ class TestLoadTokenizer:
 
         assert result is mock_tok
 
-    @patch("training.model_loader.AutoTokenizer")
+    @patch("src.training.model_loader.AutoTokenizer")
     def test_trust_remote_code_forwarded(
         self,
         mock_tok_cls: MagicMock,
@@ -659,11 +659,11 @@ class TestLoadTokenizer:
 
 
 class TestFullPipeline:
-    @patch("training.model_loader.AutoTokenizer")
-    @patch("training.model_loader.get_peft_model")
-    @patch("training.model_loader.prepare_model_for_kbit_training")
-    @patch("training.model_loader.AutoModelForCausalLM")
-    @patch("training.model_loader.BitsAndBytesConfig")
+    @patch("src.training.model_loader.AutoTokenizer")
+    @patch("src.training.model_loader.get_peft_model")
+    @patch("src.training.model_loader.prepare_model_for_kbit_training")
+    @patch("src.training.model_loader.AutoModelForCausalLM")
+    @patch("src.training.model_loader.BitsAndBytesConfig")
     def test_load_apply_lora_load_tokenizer(
         self,
         mock_bnb: MagicMock,
@@ -712,11 +712,11 @@ class TestFullPipeline:
 
 class TestModuleExports:
     def test_model_loader_in_all(self) -> None:
-        from training import model_loader
+        from src.training import model_loader
 
         assert "ModelLoader" in model_loader.__all__
 
     def test_importable_from_training_package(self) -> None:
-        from training import ModelLoader as ML
+        from src.training import ModelLoader as ML
 
         assert ML is ModelLoader
