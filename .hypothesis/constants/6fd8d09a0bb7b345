@@ -1,4 +1,0 @@
-# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/data/registry.py
-# hypothesis_version: 6.141.1
-
-['"', '.', 'Body', 'Bucket', 'ContentType', 'Dataset registered', 'ETag', 'HTTPHeaders', 'Key', 'Metadata', 'REGISTRY_BUCKET', 'ResponseMetadata', 'application/json', 'etag', 'expected-etag', 's3', 'unknown', 'utf-8']

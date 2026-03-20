@@ -1,4 +1,0 @@
-# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/training/checkpointing.py
-# hypothesis_version: 6.141.1
-
-['-', 'CheckpointManager', 'best_metric', 'checkpoint-*', 'inf', 'trainer_state.json']

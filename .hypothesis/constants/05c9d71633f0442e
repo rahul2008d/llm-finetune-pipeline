@@ -1,4 +1,0 @@
-# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/monitoring/cloudwatch.py
-# hypothesis_version: 6.151.9
-
-['CloudWatchMetrics', 'Dimensions', 'Endpoint', 'Epoch', 'InferenceLatency', 'LearningRate', 'Metric published', 'MetricName', 'Milliseconds', 'Name', 'None', 'Step', 'Timestamp', 'TokensGenerated', 'TrainingLoss', 'Unit', 'Value', 'cloudwatch', 'us-east-1']

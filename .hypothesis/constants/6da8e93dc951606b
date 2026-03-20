@@ -1,4 +1,0 @@
-# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/data/versioning.py
-# hypothesis_version: 6.141.1
-
-['*', 'Checksum verified', 'DVC add complete', 'DVC pull complete', 'DVC push complete', 'Dataset versioned', 'Manifest written', 'Running DVC command', 'add', 'data/manifests', 'dvc', 'md5', 'outs', 'pull', 'push', 'utf-8']

@@ -1,4 +1,0 @@
-# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/monitoring/alerting.py
-# hypothesis_version: 6.151.9
-
-[100, 'Alert sent', 'AlertManager', 'CRITICAL', 'INFO', 'MessageId', 'WARNING', 'details', 'drift', 'endpoint', 'event', 'fail', 'model_id', 'sns', 'us-east-1']

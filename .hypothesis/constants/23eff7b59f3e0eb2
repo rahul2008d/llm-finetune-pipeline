@@ -1,4 +1,0 @@
-# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/data/converters.py
-# hypothesis_version: 6.141.1
-
-['assistant', 'conversation', 'conversations', 'from', 'gpt', 'human', 'input', 'instruction', 'output', 'system', 'user', 'value']

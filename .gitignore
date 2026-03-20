@@ -115,3 +115,17 @@ logs/
 # Jupyter
 # =============================================================================
 .ipynb_checkpoints/
+
+# Hypothesis test cache
+.hypothesis/
+
+# MLflow local database
+mlflow.db
+mlruns/
+
+# Training outputs (model artifacts)
+outputs/
+data/prepared/
+
+# UV lock file (optional — some teams track it, some don't)
+# uv.lock

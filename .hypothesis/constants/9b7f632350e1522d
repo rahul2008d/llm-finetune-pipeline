@@ -1,4 +1,0 @@
-# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/training/merger.py
-# hypothesis_version: 6.141.1
-
-[1024, '*', '*.safetensors', '/', 'Contents', 'Key', 'Loading adapter', 'Merge complete', 'Saving merged model', 'Verification output', 'adapter-download-', 'auto', 'bfloat16', 'float16', 'float32', 'list_objects_v2', 'merged-model-', 'pt', 's3', 's3://']

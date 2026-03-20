@@ -1,4 +1,0 @@
-# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/training/train_entry.py
-# hypothesis_version: 6.141.1
-
-['*', '/', '/opt/ml/model', '/opt/ml/output/data', '1', 'Body', 'CONFIG_S3_URI', 'SM_CHANNEL_TRAIN', 'SM_MODEL_DIR', 'SM_NUM_GPUS', 'SM_OUTPUT_DATA_DIR', 'Starting training', 'Training complete', '__main__', '_validation_dir', 'config_s3_uri', 'dataset_id', 'dataset_path', 'json', 'model_dir', 'num_gpus', 'output_dir', 's3', 's3://', 'train_dir', 'training_result.json', 'utf-8', 'validation_dir']

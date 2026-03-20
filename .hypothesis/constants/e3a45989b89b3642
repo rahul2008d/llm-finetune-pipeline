@@ -1,4 +1,0 @@
-# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/data/schemas.py
-# hypothesis_version: 6.141.1
-
-[2048, 4096, 8192, 'after', 'assistant', 'clean', 'completion', 'conversation', 'instruction', 'not_scanned', 'redacted', 'system', 'user']

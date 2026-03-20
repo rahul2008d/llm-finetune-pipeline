@@ -1,4 +1,0 @@
-# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/evaluation/benchmarks.py
-# hypothesis_version: 6.151.9
-
-[256, 2048, 'Benchmark complete', 'BenchmarkRunner', 'Running benchmark', 'accuracy', 'benchmark', 'input', 'num_samples', 'output', 'pt', 'rouge']

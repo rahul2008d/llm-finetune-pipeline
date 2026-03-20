@@ -1,4 +1,0 @@
-# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/data/cleaner.py
-# hypothesis_version: 6.141.1
-
-[0.5, 0.85, 1.0, 128, 'FASTTEXT_LANG_MODEL', 'NFC', '\\n{3,}', '__label__', 'cleaning_complete', 'lid.176.ftz', 'utf-8']

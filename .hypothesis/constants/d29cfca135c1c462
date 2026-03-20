@@ -1,4 +1,0 @@
-# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/training/callbacks.py
-# hypothesis_version: 6.141.1
-
-[0.0, 0.0001, 0.95, 1.006, 1.212, 1.624, 2.448, 3.0, 4.896, 6.528, 13.056, 21.5, 32.7726, 98.32, 3600.0, 100, 500, 1024, '*', '-', '/', 'Checkpoint metadata', 'Cost update', 'CostTrackingCallback', 'Epoch complete', 'Eval loss improved', 'Gradient norm', 'GradientNormCallback', 'LoggingCallback', 'Loss spike detected', 'LossSpikingCallback', 'Memory stats', 'Peak memory summary', 'Training step', 'checkpoint-*', 'cpu_rss_mb', 'eval_loss', 'final_cpu_rss_mb', 'global_step', 'grad_norm', 'inf', 'loss', 'ml.g5.12xlarge', 'ml.g5.16xlarge', 'ml.g5.24xlarge', 'ml.g5.2xlarge', 'ml.g5.48xlarge', 'ml.g5.4xlarge', 'ml.g5.8xlarge', 'ml.g5.xlarge', 'ml.p4d.24xlarge', 'ml.p5.48xlarge', 'ml.trn1.32xlarge', 'model', 's3', 's3://']

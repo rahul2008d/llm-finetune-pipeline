@@ -1,4 +1,0 @@
-# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/.venv/bin/pytest
-# hypothesis_version: 6.151.9
-
-['-script.pyw', '.exe', '__main__']

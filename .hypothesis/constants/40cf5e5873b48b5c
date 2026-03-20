@@ -1,4 +1,0 @@
-# file: /Users/rahul.datta/Desktop/llm-fine-tuning/llm-finetune-pipeline/src/training/trainer.py
-# hypothesis_version: 6.141.1
-
-[0.0, '*', '/', 'FineTuneTrainer', 'Loading tokenizer', 'MLFLOW_TRACKING_URI', 'Starting training', 'Training complete', 'Training result', 'TrainingResult', 'Uploaded', 'adapter', 'batch_size', 'dataset_loading_mode', 'direct_path', 'estimated_cost_usd', 'eval_loss', 'final_adapter', 'finetune-', 'fresh', 'grad_accum', 'input', 'input_ids', 'instance_count', 'instance_type', 'instruction', 'learning_rate', 'local', 'local-no-mlflow', 'lora_alpha', 'lora_dropout', 'lora_r', 'max_seq_length', 'model_name', 'num_epochs', 'quant_method', 'registry', 'resume', 's3', 's3://', 'text', 'train', 'train_loss', 'use_dora', 'use_rslora', 'validation']
